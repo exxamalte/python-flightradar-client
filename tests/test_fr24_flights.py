@@ -7,7 +7,7 @@ from unittest import mock
 
 from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR
 from flightradar24_client.fr24_flights import Flightradar24FlightsFeed, \
-    Flightradar24FlightsFeedAggregator
+    Flightradar24FlightsFeedAggregator, Flightradar24FeedEntry
 from tests.utils import load_fixture
 
 
@@ -45,6 +45,8 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
                                  tzinfo=datetime.timezone.utc)
         assert feed_entry.speed == 183
         assert feed_entry.track == 167
+        assert feed_entry.squawk == "4040"
+        assert feed_entry.vert_rate == -64
 
         assert repr(feed_entry) == "<Flightradar24FeedEntry(id=7C1469)>"
 
@@ -151,3 +153,16 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
         assert feed_entry.coordinates == (-32.5470, 150.9698)
         assert feed_entry.altitude == 22175
         assert feed_entry.callsign == "JST423"
+
+    def test_entry_without_data(self):
+        """Test simple entry without data."""
+        entry = Flightradar24FeedEntry(None, None)
+        self.assertIsNone(entry.coordinates)
+        self.assertIsNone(entry.external_id)
+        self.assertIsNone(entry.altitude)
+        self.assertIsNone(entry.callsign)
+        self.assertIsNone(entry.speed)
+        self.assertIsNone(entry.track)
+        self.assertIsNone(entry.squawk)
+        self.assertIsNone(entry.vert_rate)
+        self.assertIsNone(entry.updated)
