@@ -10,7 +10,7 @@ import logging
 from haversine import haversine
 from typing import Optional
 
-from flightradar24_client import Feed, DEFAULT_HOSTNAME, DEFAULT_PORT
+from flightradar24_client import Feed
 from flightradar24_client.consts import UPDATE_OK, ATTR_VERT_RATE, ATTR_SQUAWK, \
     ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, ATTR_ALTITUDE, \
     ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE
@@ -18,6 +18,8 @@ from flightradar24_client.consts import UPDATE_OK, ATTR_VERT_RATE, ATTR_SQUAWK, 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_AGGREGATOR_STACK_SIZE = 10
+DEFAULT_HOSTNAME = 'localhost'
+DEFAULT_PORT = 8754
 
 URL_TEMPLATE = "http://{}:{}/flights.json"
 
@@ -61,7 +63,11 @@ class Flightradar24FlightsFeedAggregator:
 class Flightradar24FlightsFeed(Feed):
     """Flightradar24 Flights Feed."""
 
-    def _url(self, hostname, port):
+    def __init__(self, home_coordinates, filter_radius=None,
+                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
+        super().__init__(home_coordinates, filter_radius, hostname, port)
+
+    def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""
         return URL_TEMPLATE.format(hostname, port)
 
@@ -129,28 +135,34 @@ class Flightradar24FeedEntry:
         return None
 
     @property
-    def altitude(self) -> Optional[str]:
+    def altitude(self) -> Optional[int]:
         """Return the altitude of this entry."""
         if self._data:
-            return self._data[ATTR_ALTITUDE]
+            altitude = self._data[ATTR_ALTITUDE]
+            if altitude == 'ground':
+                altitude = 0
+            return altitude
         return None
 
     @property
     def callsign(self) -> Optional[str]:
         """Return the callsign of this entry."""
         if self._data:
-            return self._data[ATTR_CALLSIGN]
+            callsign = self._data[ATTR_CALLSIGN]
+            if callsign:
+                callsign = callsign.strip()
+            return callsign
         return None
 
     @property
-    def speed(self) -> Optional[str]:
+    def speed(self) -> Optional[int]:
         """Return the speed of this entry."""
         if self._data:
             return self._data[ATTR_SPEED]
         return None
 
     @property
-    def track(self) -> Optional[str]:
+    def track(self) -> Optional[int]:
         """Return the track of this entry."""
         if self._data:
             return self._data[ATTR_TRACK]
@@ -164,7 +176,7 @@ class Flightradar24FeedEntry:
         return None
 
     @property
-    def vert_rate(self) -> Optional[str]:
+    def vert_rate(self) -> Optional[int]:
         """Return the vertical rate of this entry."""
         if self._data:
             return self._data[ATTR_VERT_RATE]

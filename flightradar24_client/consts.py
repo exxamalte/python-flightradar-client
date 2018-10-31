@@ -6,7 +6,11 @@ Constants for feeds and feed entries.
 
 ATTR_ALTITUDE = 'altitude'
 ATTR_CALLSIGN = 'callsign'
+ATTR_FLIGHT = 'flight'
+ATTR_HEX = 'hex'
+ATTR_LAT = 'lat'
 ATTR_LATITUDE = 'latitude'
+ATTR_LON = 'lon'
 ATTR_LONGITUDE = 'longitude'
 ATTR_MODE_S = 'mode_s'
 ATTR_SPEED = 'speed'

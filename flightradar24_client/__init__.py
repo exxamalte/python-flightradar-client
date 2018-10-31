@@ -7,19 +7,16 @@ from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR
 
 _LOGGER = logging.getLogger(__name__)
 
-DEFAULT_HOSTNAME = 'localhost'
-DEFAULT_PORT = 8754
-
 
 class Feed:
     """Data format independent feed."""
 
     def __init__(self, home_coordinates, filter_radius=None,
-                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
+                 hostname=None, port=None):
         """Initialise feed."""
         self._home_coordinates = home_coordinates
         self._filter_radius = filter_radius
-        self._url = self._url(hostname, port)
+        self._url = self._create_url(hostname, port)
         self._request = requests.Request(method="GET", url=self._url).prepare()
 
     def __repr__(self):
@@ -28,7 +25,7 @@ class Feed:
             self.__class__.__name__, self._home_coordinates, self._url,
             self._filter_radius)
 
-    def _url(self, hostname, port):
+    def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""
         pass
 
@@ -91,7 +88,8 @@ class Feed:
         # Always remove entries without coordinates.
         filtered_entries = list(
             filter(lambda entry:
-                   entry.coordinates is not None,
+                   (entry.coordinates is not None) and
+                   (entry.coordinates != (None, None)),
                    filtered_entries))
         # Always remove entries on the ground (altitude: 0).
         filtered_entries = list(
