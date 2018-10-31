@@ -26,7 +26,8 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         feed = Dump1090AircraftsFeed(home_coordinates)
         assert repr(feed) == "<Dump1090AircraftsFeed(" \
                              "home=(-31.0, 151.0), " \
-                             "url=http://localhost:8888/aircrafts.json, " \
+                             "url=http://localhost:8888/data/" \
+                             "aircraft.json, " \
                              "radius=None)>"
         status, entries = feed.update()
         assert status == UPDATE_OK
@@ -62,7 +63,8 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         feed = Dump1090AircraftsFeed(home_coordinates, filter_radius=300)
         assert repr(feed) == "<Dump1090AircraftsFeed(" \
                              "home=(-31.0, 151.0), " \
-                             "url=http://localhost:8888/aircrafts.json, " \
+                             "url=http://localhost:8888/data/" \
+                             "aircraft.json, " \
                              "radius=300)>"
         status, entries = feed.update()
         assert status == UPDATE_OK
