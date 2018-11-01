@@ -4,9 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 REQUIRES = [
-    'haversine==1.0.1',
-#    'pytz>=2018.04',
-    'requests==2.20.0',
+    'haversine>=1.0.1',
+    'requests>=2.20.0',
 ]
 
 setup(
