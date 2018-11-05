@@ -4,16 +4,14 @@ Local Flightradar24 Flights Feed.
 Fetches JSON feed from a local Flightradar24 flights feed.
 """
 import collections
-import datetime
 import json
 import logging
-from haversine import haversine
-from typing import Optional
 
-from flightradar24_client import Feed
-from flightradar24_client.consts import UPDATE_OK, ATTR_VERT_RATE, ATTR_SQUAWK, \
-    ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, ATTR_ALTITUDE, \
-    ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE
+from flightradar24_client import Feed, FeedEntry
+from flightradar24_client.utils import FixedSizeDict
+from flightradar24_client.consts import UPDATE_OK, ATTR_VERT_RATE, \
+    ATTR_SQUAWK, ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, \
+    ATTR_ALTITUDE, ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,11 +28,13 @@ class Flightradar24FlightsFeedAggregator:
     def __init__(self, home_coordinates, filter_radius=None,
                  hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
         """Initialise feed aggregator."""
-        self._feed = Flightradar24FlightsFeed(home_coordinates, filter_radius,
-                                              hostname, port)
+        self._feed = Flightradar24FlightsFeed(home_coordinates, False,
+                                              filter_radius, hostname, port)
+        self._filter_radius = filter_radius
         self._stack = collections.deque(DEFAULT_AGGREGATOR_STACK_SIZE * [[]],
                                         DEFAULT_AGGREGATOR_STACK_SIZE)
-        self._callsigns = {}
+        self._callsigns = FixedSizeDict(max=500)
+        self._altitudes = FixedSizeDict(max=500)
 
     def __repr__(self):
         """Return string representation of this feed aggregator."""
@@ -56,16 +56,51 @@ class Flightradar24FlightsFeedAggregator:
             # Fill in callsign from previous update if currently missing.
             if not data[key].callsign and key in self._callsigns:
                 data[key].override(ATTR_CALLSIGN, self._callsigns[key])
+            # Keep record of altitudes.
+            if key not in self._altitudes and data[key].altitude:
+                self._altitudes[key] = data[key].altitude
+            # Update altitude.
+            # TODO
         _LOGGER.debug("Callsigns = %s", self._callsigns)
-        return status, data
+        _LOGGER.debug("Altitudes = %s", self._altitudes)
+        # Filter.
+        filtered_entries = self._filter_entries(data.values())
+        # Rebuild the entries and use external id as key.
+        result_entries = {entry.external_id: entry
+                          for entry in filtered_entries}
+        return status, result_entries
+
+    def _filter_entries(self, entries):
+        """Filter the provided entries."""
+        filtered_entries = entries
+        # Always remove entries without coordinates.
+        filtered_entries = list(
+            filter(lambda entry:
+                   (entry.coordinates is not None) and
+                   (entry.coordinates != (None, None)),
+                   filtered_entries))
+        # Always remove entries on the ground (altitude: 0).
+        filtered_entries = list(
+            filter(lambda entry:
+                   entry.altitude > 0,
+                   filtered_entries))
+        # Filter by distance.
+        if self._filter_radius:
+            filtered_entries = list(
+                filter(lambda entry:
+                       entry.distance_to_home <= self._filter_radius,
+                       filtered_entries))
+        return filtered_entries
 
 
 class Flightradar24FlightsFeed(Feed):
     """Flightradar24 Flights Feed."""
 
-    def __init__(self, home_coordinates, filter_radius=None,
-                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
-        super().__init__(home_coordinates, filter_radius, hostname, port)
+    def __init__(self, home_coordinates, apply_filters=True,
+                 filter_radius=None, hostname=DEFAULT_HOSTNAME,
+                 port=DEFAULT_PORT):
+        super().__init__(home_coordinates, apply_filters, filter_radius,
+                         hostname, port)
 
     def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""
@@ -73,7 +108,7 @@ class Flightradar24FlightsFeed(Feed):
 
     def _new_entry(self, home_coordinates, feed_data):
         """Generate a new entry."""
-        return Flightradar24FeedEntry(home_coordinates, feed_data)
+        return FeedEntry(home_coordinates, feed_data)
 
     def _parse(self, json_string):
         """Parse the provided JSON data."""
@@ -94,101 +129,3 @@ class Flightradar24FlightsFeed(Feed):
                 ATTR_CALLSIGN: data_entry[16],
             })
         return result
-
-
-class Flightradar24FeedEntry:
-    """Feed entry class."""
-
-    def __init__(self, home_coordinates, data):
-        """Initialise this feed entry."""
-        self._home_coordinates = home_coordinates
-        self._data = data
-
-    def __repr__(self):
-        """Return string representation of this entry."""
-        return '<{}(id={})>'.format(self.__class__.__name__, self.external_id)
-
-    def override(self, key, value):
-        """Override value in original data."""
-        if self._data:
-            self._data[key] = value
-
-    @property
-    def coordinates(self):
-        """Return the coordinates of this entry."""
-        if self._data:
-            coordinates = (self._data[ATTR_LATITUDE], self._data[
-                ATTR_LONGITUDE])
-            return coordinates
-        return None
-
-    @property
-    def distance_to_home(self):
-        """Return the distance in km of this entry to the home coordinates."""
-        return haversine(self._home_coordinates, self.coordinates)
-
-    @property
-    def external_id(self) -> Optional[str]:
-        """Return the external id of this entry."""
-        if self._data:
-            return self._data[ATTR_MODE_S]
-        return None
-
-    @property
-    def altitude(self) -> Optional[int]:
-        """Return the altitude of this entry."""
-        if self._data:
-            altitude = self._data[ATTR_ALTITUDE]
-            if altitude == 'ground':
-                altitude = 0
-            return altitude
-        return None
-
-    @property
-    def callsign(self) -> Optional[str]:
-        """Return the callsign of this entry."""
-        if self._data:
-            callsign = self._data[ATTR_CALLSIGN]
-            if callsign:
-                callsign = callsign.strip()
-            return callsign
-        return None
-
-    @property
-    def speed(self) -> Optional[int]:
-        """Return the speed of this entry."""
-        if self._data:
-            return self._data[ATTR_SPEED]
-        return None
-
-    @property
-    def track(self) -> Optional[int]:
-        """Return the track of this entry."""
-        if self._data:
-            return self._data[ATTR_TRACK]
-        return None
-
-    @property
-    def squawk(self) -> Optional[str]:
-        """Return the squawk of this entry."""
-        if self._data:
-            return self._data[ATTR_SQUAWK]
-        return None
-
-    @property
-    def vert_rate(self) -> Optional[int]:
-        """Return the vertical rate of this entry."""
-        if self._data:
-            return self._data[ATTR_VERT_RATE]
-        return None
-
-    @property
-    def updated(self) -> datetime:
-        """Return the updated timestamp of this entry."""
-        if self._data:
-            updated = self._data[ATTR_UPDATED]
-            if updated:
-                # Parse the date. Timestamp in microseconds from unix epoch.
-                return datetime.datetime.fromtimestamp(
-                    updated, tz=datetime.timezone.utc)
-        return None

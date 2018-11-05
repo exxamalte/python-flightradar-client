@@ -6,12 +6,11 @@ Fetches JSON feed from a local Dump1090 aircrafts feed.
 import json
 import logging
 
-from flightradar24_client import Feed
+from flightradar24_client import Feed, FeedEntry
 from flightradar24_client.consts import ATTR_VERT_RATE, ATTR_SQUAWK, \
     ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, ATTR_ALTITUDE, \
     ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE, ATTR_LON, ATTR_LAT, ATTR_HEX, \
     ATTR_FLIGHT
-from flightradar24_client.fr24_flights import Flightradar24FeedEntry
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -34,7 +33,7 @@ class Dump1090AircraftsFeed(Feed):
 
     def _new_entry(self, home_coordinates, feed_data):
         """Generate a new entry."""
-        return Flightradar24FeedEntry(home_coordinates, feed_data)
+        return FeedEntry(home_coordinates, feed_data)
 
     def _parse(self, json_string):
         """Parse the provided JSON data."""

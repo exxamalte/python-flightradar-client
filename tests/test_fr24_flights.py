@@ -7,7 +7,8 @@ from unittest import mock
 
 from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR
 from flightradar24_client.fr24_flights import Flightradar24FlightsFeed, \
-    Flightradar24FlightsFeedAggregator, Flightradar24FeedEntry
+    Flightradar24FlightsFeedAggregator
+from flightradar24_client import FeedEntry
 from tests.utils import load_fixture
 
 
@@ -156,7 +157,7 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
 
     def test_entry_without_data(self):
         """Test simple entry without data."""
-        entry = Flightradar24FeedEntry(None, None)
+        entry = FeedEntry(None, None)
         self.assertIsNone(entry.coordinates)
         self.assertIsNone(entry.external_id)
         self.assertIsNone(entry.altitude)
