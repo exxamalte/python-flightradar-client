@@ -6,7 +6,7 @@ Fetches JSON feed from a local Dump1090 aircrafts feed.
 import json
 import logging
 
-from flightradar24_client import Feed, FeedEntry
+from flightradar24_client import Feed, FeedEntry, FeedAggregator
 from flightradar24_client.consts import ATTR_VERT_RATE, ATTR_SQUAWK, \
     ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, ATTR_ALTITUDE, \
     ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE, ATTR_LON, ATTR_LAT, ATTR_HEX, \
@@ -20,12 +20,30 @@ DEFAULT_PORT = 8888
 URL_TEMPLATE = "http://{}:{}/data/aircraft.json"
 
 
-class Dump1090AircraftsFeed(Feed):
-    """Dump1090 Aircrafts Feed."""
+class Dump1090AircraftsFeedAggregator(FeedAggregator):
+    """Aggregates date received from the feed over a period of time."""
 
     def __init__(self, home_coordinates, filter_radius=None,
                  hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
-        super().__init__(home_coordinates, filter_radius, hostname, port)
+        """Initialise feed aggregator."""
+        super().__init__(filter_radius)
+        self._feed = Dump1090AircraftsFeed(home_coordinates, False,
+                                           filter_radius, hostname, port)
+
+    @property
+    def feed(self):
+        """Return the external feed access."""
+        return self._feed
+
+
+class Dump1090AircraftsFeed(Feed):
+    """Dump1090 Aircrafts Feed."""
+
+    def __init__(self, home_coordinates, apply_filters=True,
+                 filter_radius=None, hostname=DEFAULT_HOSTNAME,
+                 port=DEFAULT_PORT):
+        super().__init__(home_coordinates, apply_filters, filter_radius,
+                         hostname, port)
 
     def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""

@@ -49,7 +49,7 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
         assert feed_entry.squawk == "4040"
         assert feed_entry.vert_rate == -64
 
-        assert repr(feed_entry) == "<Flightradar24FeedEntry(id=7C1469)>"
+        assert repr(feed_entry) == "<FeedEntry(id=7C1469)>"
 
     @mock.patch("requests.Request")
     @mock.patch("requests.Session")
@@ -139,7 +139,7 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
         assert feed_entry.altitude == 22175
         assert feed_entry.callsign == "JST423"
 
-        assert repr(feed_entry) == "<Flightradar24FeedEntry(id=7C6B28)>"
+        assert repr(feed_entry) == "<FeedEntry(id=7C6B28)>"
 
         # Update 2
         mock_session.return_value.__enter__.return_value.send\
