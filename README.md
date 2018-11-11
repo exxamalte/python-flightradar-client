@@ -40,19 +40,23 @@ the same parameters:
 #### Feed
 
 ```python
+import asyncio
 from flightradar24_client.fr24_flights import Flightradar24FlightsFeed
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
 feed = Flightradar24FlightsFeed((-33.5, 151.5))
-status, entries = feed.update()
+LOOP = asyncio.get_event_loop()
+status, entries = LOOP.run_until_complete(feed.update())
 ```
 
 #### Feed Aggregator
 
 ```python
+import asyncio
 from flightradar24_client.fr24_flights import Flightradar24FlightsFeedAggregator
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed = Flightradar24FlightsFeedAggregator((-33.5, 151.5))
-status, entries = feed.update()
+feed_aggregator = Flightradar24FlightsFeedAggregator((-33.5, 151.5))
+LOOP = asyncio.get_event_loop()
+status, entries = LOOP.run_until_complete(feed_aggregator.update())
 ```
 
 ### Dump1090 Feed
@@ -73,17 +77,21 @@ the same parameters:
 #### Feed
 
 ```python
+import asyncio
 from flightradar24_client.dump1090_aircrafts import Dump1090AircraftsFeed
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
 feed = Dump1090AircraftsFeed((-33.5, 151.5))
-status, entries = feed.update()
+LOOP = asyncio.get_event_loop()
+status, entries = LOOP.run_until_complete(feed.update())
 ```
 
 #### Feed Aggregator
 
 ```python
+import asyncio
 from flightradar24_client.dump1090_aircrafts import Dump1090AircraftsFeedAggregator
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed = Dump1090AircraftsFeedAggregator((-33.5, 151.5))
-status, entries = feed.update()
+feed_aggregator = Dump1090AircraftsFeedAggregator((-33.5, 151.5))
+LOOP = asyncio.get_event_loop()
+status, entries = LOOP.run_until_complete(feed_aggregator.update())
 ```

@@ -3,7 +3,6 @@ Local Flightradar24 Flights Feed.
 
 Fetches JSON feed from a local Flightradar24 flights feed.
 """
-import json
 import logging
 
 from flightradar24_client import Feed, FeedEntry, FeedAggregator
@@ -23,11 +22,13 @@ class Flightradar24FlightsFeedAggregator(FeedAggregator):
     """Aggregates date received from the feed over a period of time."""
 
     def __init__(self, home_coordinates, filter_radius=None,
-                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
+                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT, loop=None,
+                 session=None):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
         self._feed = Flightradar24FlightsFeed(home_coordinates, False,
-                                              filter_radius, hostname, port)
+                                              filter_radius, hostname, port,
+                                              loop, session)
 
     @property
     def feed(self):
@@ -40,9 +41,9 @@ class Flightradar24FlightsFeed(Feed):
 
     def __init__(self, home_coordinates, apply_filters=True,
                  filter_radius=None, hostname=DEFAULT_HOSTNAME,
-                 port=DEFAULT_PORT):
+                 port=DEFAULT_PORT, loop=None, session=None):
         super().__init__(home_coordinates, apply_filters, filter_radius,
-                         hostname, port)
+                         hostname, port, loop, session)
 
     def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""
@@ -52,10 +53,9 @@ class Flightradar24FlightsFeed(Feed):
         """Generate a new entry."""
         return FeedEntry(home_coordinates, feed_data)
 
-    def _parse(self, json_string):
+    def _parse(self, parsed_json):
         """Parse the provided JSON data."""
         result = []
-        parsed_json = json.loads(json_string)
         for key in parsed_json:
             data_entry = parsed_json[key]
             result.append({
@@ -70,4 +70,5 @@ class Flightradar24FlightsFeed(Feed):
                 ATTR_VERT_RATE: data_entry[15],
                 ATTR_CALLSIGN: data_entry[16],
             })
+        _LOGGER.debug("Parser result = %s", result)
         return result

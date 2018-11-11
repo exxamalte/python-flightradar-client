@@ -3,7 +3,6 @@ Local Dump1090 Aircrafts Feed.
 
 Fetches JSON feed from a local Dump1090 aircrafts feed.
 """
-import json
 import logging
 
 from flightradar24_client import Feed, FeedEntry, FeedAggregator
@@ -24,11 +23,13 @@ class Dump1090AircraftsFeedAggregator(FeedAggregator):
     """Aggregates date received from the feed over a period of time."""
 
     def __init__(self, home_coordinates, filter_radius=None,
-                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
+                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT, loop=None,
+                 session=None):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
         self._feed = Dump1090AircraftsFeed(home_coordinates, False,
-                                           filter_radius, hostname, port)
+                                           filter_radius, hostname, port,
+                                              loop, session)
 
     @property
     def feed(self):
@@ -41,9 +42,9 @@ class Dump1090AircraftsFeed(Feed):
 
     def __init__(self, home_coordinates, apply_filters=True,
                  filter_radius=None, hostname=DEFAULT_HOSTNAME,
-                 port=DEFAULT_PORT):
+                 port=DEFAULT_PORT, loop=None, session=None):
         super().__init__(home_coordinates, apply_filters, filter_radius,
-                         hostname, port)
+                         hostname, port, loop, session)
 
     def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""
@@ -53,10 +54,9 @@ class Dump1090AircraftsFeed(Feed):
         """Generate a new entry."""
         return FeedEntry(home_coordinates, feed_data)
 
-    def _parse(self, json_string):
+    def _parse(self, parsed_json):
         """Parse the provided JSON data."""
         result = []
-        parsed_json = json.loads(json_string)
         timestamp = None if 'now' not in parsed_json else parsed_json['now']
         if 'aircraft' in parsed_json:
             aircrafts = parsed_json['aircraft']

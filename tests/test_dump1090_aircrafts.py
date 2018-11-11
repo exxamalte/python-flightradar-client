@@ -1,9 +1,9 @@
 """Test for the Dump1090 Aircrafts feed."""
+import aiohttp
+import asyncio
+from aioresponses import aioresponses
 import datetime
-import requests
 import unittest
-from json import JSONDecodeError
-from unittest import mock
 
 from flightradar24_client import FeedEntry
 from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR
@@ -15,15 +15,14 @@ from tests.utils import load_fixture
 class TestDump1090AircraftsFeed(unittest.TestCase):
     """Test the Dump1090 Aircrafts Feed."""
 
-    @mock.patch("requests.Request")
-    @mock.patch("requests.Session")
-    def test_update_ok(self, mock_session, mock_request):
+    @aioresponses()
+    def test_update_ok(self, mock_session):
         """Test updating feed is ok."""
+        loop = asyncio.get_event_loop()
         home_coordinates = (-31.0, 151.0)
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.ok = True
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.text = load_fixture('dump1090-aircrafts-1.json')
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         status=200,
+                         body=load_fixture('dump1090-aircrafts-1.json'))
 
         feed = Dump1090AircraftsFeed(home_coordinates)
         assert repr(feed) == "<Dump1090AircraftsFeed(" \
@@ -31,7 +30,7 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
                              "url=http://localhost:8888/data/" \
                              "aircraft.json, " \
                              "radius=None)>"
-        status, entries = feed.update()
+        status, entries = loop.run_until_complete(feed.update())
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
         assert len(entries) == 5
@@ -52,15 +51,14 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
 
         assert repr(feed_entry) == "<FeedEntry(id=7c6d9a)>"
 
-    @mock.patch("requests.Request")
-    @mock.patch("requests.Session")
-    def test_update_ok_filter_radius(self, mock_session, mock_request):
+    @aioresponses()
+    def test_update_ok_filter_radius(self, mock_session):
         """Test updating feed is ok with filter radius."""
+        loop = asyncio.get_event_loop()
         home_coordinates = (-31.0, 151.0)
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.ok = True
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.text = load_fixture('dump1090-aircrafts-1.json')
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         status=200,
+                         body=load_fixture('dump1090-aircrafts-1.json'))
 
         feed = Dump1090AircraftsFeed(home_coordinates, filter_radius=300)
         assert repr(feed) == "<Dump1090AircraftsFeed(" \
@@ -68,56 +66,54 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
                              "url=http://localhost:8888/data/" \
                              "aircraft.json, " \
                              "radius=300)>"
-        status, entries = feed.update()
+        status, entries = loop.run_until_complete(feed.update())
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
         assert len(entries) == 1
 
-    @mock.patch("requests.Request")
-    @mock.patch("requests.Session")
-    def test_update_error(self, mock_session, mock_request):
+    @aioresponses()
+    def test_update_error(self, mock_session):
         """Test updating feed results in error."""
+        loop = asyncio.get_event_loop()
         home_coordinates = (-31.0, 151.0)
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.ok = False
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         status=500, body='ERROR')
 
         feed = Dump1090AircraftsFeed(home_coordinates)
-        status, entries = feed.update()
+        status, entries = loop.run_until_complete(feed.update())
         assert status == UPDATE_ERROR
 
-    @mock.patch("requests.Request")
-    @mock.patch("requests.Session")
-    def test_update_with_request_exception(self, mock_session, mock_request):
+    @aioresponses()
+    def test_update_with_client_error(self, mock_session):
         """Test updating feed raises exception."""
+        loop = asyncio.get_event_loop()
         home_coordinates = (-31.0, 151.0)
-        mock_session.return_value.__enter__.return_value.send\
-            .side_effect = requests.exceptions.RequestException
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         exception=aiohttp.ClientError())
 
         feed = Dump1090AircraftsFeed(home_coordinates)
-        status, entries = feed.update()
+        status, entries = loop.run_until_complete(feed.update())
         assert status == UPDATE_ERROR
         self.assertIsNone(entries)
 
-    @mock.patch("requests.Request")
-    @mock.patch("requests.Session")
-    def test_update_with_json_decode_error(self, mock_session, mock_request):
+    @aioresponses()
+    def test_update_with_timeout_error(self, mock_session):
         """Test updating feed raises exception."""
+        loop = asyncio.get_event_loop()
         home_coordinates = (-31.0, 151.0)
-        mock_session.return_value.__enter__.return_value.send\
-            .side_effect = JSONDecodeError("", "", 0)
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         exception=asyncio.TimeoutError())
 
         feed = Dump1090AircraftsFeed(home_coordinates)
-        status, entries = feed.update()
+        status, entries = loop.run_until_complete(feed.update())
         assert status == UPDATE_ERROR
         self.assertIsNone(entries)
 
-    @mock.patch("requests.Request")
-    @mock.patch("requests.Session")
-    def test_feed_aggregator(self, mock_session, mock_request):
+    @aioresponses()
+    def test_feed_aggregator(self, mock_session):
         """Test updating feed through feed aggregator."""
+        loop = asyncio.get_event_loop()
         home_coordinates = (-31.0, 151.0)
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.ok = True
 
         feed_aggregator = Dump1090AircraftsFeedAggregator(home_coordinates)
         assert repr(feed_aggregator) == "<Dump1090AircraftsFeedAggregator" \
@@ -128,9 +124,10 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
                                         "radius=None)>)>"
 
         # Update 1
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.text = load_fixture('dump1090-aircrafts-1.json')
-        status, entries = feed_aggregator.update()
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         status=200,
+                         body=load_fixture('dump1090-aircrafts-1.json'))
+        status, entries = loop.run_until_complete(feed_aggregator.update())
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
         assert len(entries) == 5
@@ -144,9 +141,10 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         assert repr(feed_entry) == "<FeedEntry(id=7c6b28)>"
 
         # Update 2
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.text = load_fixture('dump1090-aircrafts-2.json')
-        status, entries = feed_aggregator.update()
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         status=200,
+                         body=load_fixture('dump1090-aircrafts-2.json'))
+        status, entries = loop.run_until_complete(feed_aggregator.update())
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
         assert len(entries) == 5
@@ -157,15 +155,14 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         assert feed_entry.altitude == 26000
         assert feed_entry.callsign == "JST423"
 
-    @mock.patch("requests.Request")
-    @mock.patch("requests.Session")
-    def test_feed_aggregator_filter_radius(self, mock_session, mock_request):
+    @aioresponses()
+    def test_feed_aggregator_filter_radius(self, mock_session):
         """Test updating feed is ok with filter radius."""
+        loop = asyncio.get_event_loop()
         home_coordinates = (-31.0, 151.0)
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.ok = True
-        mock_session.return_value.__enter__.return_value.send\
-            .return_value.text = load_fixture('dump1090-aircrafts-1.json')
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         status=200,
+                         body=load_fixture('dump1090-aircrafts-1.json'))
 
         feed_aggregator = Dump1090AircraftsFeedAggregator(home_coordinates,
                                                           filter_radius=300)
@@ -176,7 +173,7 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
                                         "data/aircraft.json, " \
                                         "radius=300)>)>"
 
-        status, entries = feed_aggregator.update()
+        status, entries = loop.run_until_complete(feed_aggregator.update())
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
         assert len(entries) == 1
