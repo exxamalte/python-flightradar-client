@@ -53,38 +53,42 @@ class FeedAggregator:
         if status == UPDATE_OK:
             self._stack.pop()
             self._stack.appendleft(data)
-        # Fill in some gaps in data received.
-        for key in data:
-            # Keep record of callsigns.
-            if key not in self._callsigns and data[key].callsign:
-                self._callsigns[key] = data[key].callsign
-            # Fill in callsign from previous update if currently missing.
-            if not data[key].callsign and key in self._callsigns:
-                data[key].override(ATTR_CALLSIGN, self._callsigns[key])
-            # Keep record of latest coordinates.
-            # Here we are considering (lat=0, lon=0) as unwanted coordinates,
-            # despite the fact that they are valid. Typically, coordinates
-            # (0, 0) indicate that the correct coordinates have not been
-            # received.
-            if data[key].coordinates \
-                    and data[key].coordinates != INVALID_COORDINATES \
-                    and data[key].coordinates != NONE_COORDINATES:
-                self._coordinates[key] = data[key].coordinates
-            # Fill in missing coordinates.
-            if (not data[key].coordinates
-                or data[key].coordinates == INVALID_COORDINATES
-                or data[key].coordinates == NONE_COORDINATES) \
-                    and key in self._coordinates:
-                data[key].override(ATTR_LATITUDE, self._coordinates[key][0])
-                data[key].override(ATTR_LONGITUDE, self._coordinates[key][1])
-        _LOGGER.debug("Callsigns = %s", self._callsigns)
-        _LOGGER.debug("Coordinates = %s", self._coordinates)
-        # Filter entries.
-        filtered_entries = self._filter_entries(data.values())
-        # Rebuild the entries and use external id as key.
-        result_entries = {entry.external_id: entry
-                          for entry in filtered_entries}
-        return status, result_entries
+        if data:
+            # Fill in some gaps in data received.
+            for key in data:
+                # Keep record of callsigns.
+                if key not in self._callsigns and data[key].callsign:
+                    self._callsigns[key] = data[key].callsign
+                # Fill in callsign from previous update if currently missing.
+                if not data[key].callsign and key in self._callsigns:
+                    data[key].override(ATTR_CALLSIGN, self._callsigns[key])
+                # Keep record of latest coordinates.
+                # Here we are considering (lat=0, lon=0) as unwanted
+                # coordinates, despite the fact that they are valid.
+                # Typically, coordinates (0, 0) indicate that the correct
+                # coordinates have not been received.
+                if data[key].coordinates \
+                        and data[key].coordinates != INVALID_COORDINATES \
+                        and data[key].coordinates != NONE_COORDINATES:
+                    self._coordinates[key] = data[key].coordinates
+                # Fill in missing coordinates.
+                if (not data[key].coordinates
+                    or data[key].coordinates == INVALID_COORDINATES
+                    or data[key].coordinates == NONE_COORDINATES) \
+                        and key in self._coordinates:
+                    data[key].override(ATTR_LATITUDE,
+                                       self._coordinates[key][0])
+                    data[key].override(ATTR_LONGITUDE,
+                                       self._coordinates[key][1])
+            _LOGGER.debug("Callsigns = %s", self._callsigns)
+            _LOGGER.debug("Coordinates = %s", self._coordinates)
+            # Filter entries.
+            filtered_entries = self._filter_entries(data.values())
+            # Rebuild the entries and use external id as key.
+            result_entries = {entry.external_id: entry
+                              for entry in filtered_entries}
+            return status, result_entries
+        return status, None
 
     def _filter_entries(self, entries):
         """Filter the provided entries."""
