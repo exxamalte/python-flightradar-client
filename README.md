@@ -30,12 +30,13 @@ service (normally under `http://localhost:8754/flights.json`).
 `Flightradar24FlightsFeed` and `Flightradar24FlightsFeedAggregator` support
 the same parameters:
 
-| Name               | Type                                                                         | Description                                                                                   |
-|--------------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| `home_coordinates` | required, tuple of latitude and longitude                                    | Used to calculate the distance to each aircraft.                                              |
-| `filter_radius`    | optional, float value in kilometres, default: don't filter by distance       | Only aircrafts within this radius around the home coordinates are included in the result set. |
-| `hostname`         | optional, hostname of the Pi24 ADS-B receiver, default: `localhost`          | Define if you are not running this library on your Pi24 ADS-B receiver.                       |
-| `port`             | optional, port of the Pi24 ADS-B receiver's flights service, default: `8754` | Define if you have configured a different port on your Pi24 ADS-B receiver.                   |
+| Name               | Type                                                                                                 | Description                                                                                   |
+|--------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `home_coordinates` | required, tuple of latitude and longitude                                                            | Used to calculate the distance to each aircraft.                                              |
+| `filter_radius`    | optional, float value in kilometres, default: don't filter by distance                               | Only aircrafts within this radius around the home coordinates are included in the result set. |
+| `url`              | optional, full url to access the Pi24 ADS-B receiver JSON, default: construct with hostname and port | Define if you have customised access to Pi24 ADS-B receiver or use HTTPS for example.         |
+| `hostname`         | optional, hostname of the Pi24 ADS-B receiver, default: `localhost`                                  | Define if you are not running this library on your Pi24 ADS-B receiver.                       |
+| `port`             | optional, port of the Pi24 ADS-B receiver's flights service, default: `8754`                         | Define if you have configured a different port on your Pi24 ADS-B receiver.                   |
 
 #### Feed
 
@@ -67,12 +68,13 @@ service (normally under `http://localhost:8888/data/aircraft.json`).
 `Dump1090AircraftsFeed` and `Dump1090AircraftsFeedAggregator` support
 the same parameters:
 
-| Name               | Type                                                                           | Description                                                                                   |
-|--------------------|--------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| `home_coordinates` | required, tuple of latitude and longitude                                      | Used to calculate the distance to each aircraft.                                              |
-| `filter_radius`    | optional, float value in kilometres, default: don't filter by distance         | Only aircrafts within this radius around the home coordinates are included in the result set. |
-| `hostname`         | optional, hostname of the Pi24 ADS-B receiver, default: `localhost`            | Define if you are not running this library on your Pi24 ADS-B receiver.                       |
-| `port`             | optional, port of the Pi24 ADS-B receiver's dump1090 service, default: `8888`  | Define if you have configured a different port on your Pi24 ADS-B receiver.                   |
+| Name               | Type                                                                                                 | Description                                                                                   |
+|--------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| `home_coordinates` | required, tuple of latitude and longitude                                                            | Used to calculate the distance to each aircraft.                                              |
+| `filter_radius`    | optional, float value in kilometres, default: don't filter by distance                               | Only aircrafts within this radius around the home coordinates are included in the result set. |
+| `url`              | optional, full url to access the Pi24 ADS-B receiver JSON, default: construct with hostname and port | Define if you have customised access to Pi24 ADS-B receiver or use HTTPS for example.         |
+| `hostname`         | optional, hostname of the Pi24 ADS-B receiver, default: `localhost`                                  | Define if you are not running this library on your Pi24 ADS-B receiver.                       |
+| `port`             | optional, port of the Pi24 ADS-B receiver's dump1090 service, default: `8888`                        | Define if you have configured a different port on your Pi24 ADS-B receiver.                   |
 
 #### Feed
 

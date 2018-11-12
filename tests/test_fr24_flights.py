@@ -50,6 +50,28 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
         assert repr(feed_entry) == "<FeedEntry(id=7C1469)>"
 
     @aioresponses()
+    def test_update_custom_url(self, mock_session):
+        """Test updating feed is ok with custom url."""
+        loop = asyncio.get_event_loop()
+        home_coordinates = (-31.0, 151.0)
+        custom_url = 'http://something:9876/foo/bar.json'
+        mock_session.get(custom_url, status=200,
+                         body=load_fixture('fr24-flights-1.json'))
+
+        feed = Flightradar24FlightsFeed(home_coordinates, url=custom_url)
+        assert repr(feed) == "<Flightradar24FlightsFeed(" \
+                             "home=(-31.0, 151.0), " \
+                             "url=http://something:9876/foo/bar.json, " \
+                             "radius=None)>"
+        status, entries = loop.run_until_complete(feed.update())
+        assert status == UPDATE_OK
+        self.assertIsNotNone(entries)
+        assert len(entries) == 6
+
+        feed_entry = entries['7C1469']
+        assert feed_entry.external_id == "7C1469"
+
+    @aioresponses()
     def test_update_ok_filter_radius(self, mock_session):
         """Test updating feed is ok with filter radius."""
         loop = asyncio.get_event_loop()
