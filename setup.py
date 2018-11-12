@@ -11,7 +11,7 @@ REQUIRES = [
 
 setup(
     name="flightradar24_client",
-    version="0.1",
+    version="0.2",
     author="Malte Franken",
     author_email="coding@subspace.de",
     description="Flightradar24 client library.",
