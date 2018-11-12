@@ -21,14 +21,14 @@ URL_TEMPLATE = "http://{}:{}/flights.json"
 class Flightradar24FlightsFeedAggregator(FeedAggregator):
     """Aggregates date received from the feed over a period of time."""
 
-    def __init__(self, home_coordinates, filter_radius=None,
+    def __init__(self, home_coordinates, filter_radius=None, url=None,
                  hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT, loop=None,
                  session=None):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
         self._feed = Flightradar24FlightsFeed(home_coordinates, False,
-                                              filter_radius, hostname, port,
-                                              loop, session)
+                                              filter_radius, url, hostname,
+                                              port, loop, session)
 
     @property
     def feed(self):
@@ -40,9 +40,9 @@ class Flightradar24FlightsFeed(Feed):
     """Flightradar24 Flights Feed."""
 
     def __init__(self, home_coordinates, apply_filters=True,
-                 filter_radius=None, hostname=DEFAULT_HOSTNAME,
+                 filter_radius=None, url=None, hostname=DEFAULT_HOSTNAME,
                  port=DEFAULT_PORT, loop=None, session=None):
-        super().__init__(home_coordinates, apply_filters, filter_radius,
+        super().__init__(home_coordinates, apply_filters, filter_radius, url,
                          hostname, port, loop, session)
 
     def _create_url(self, hostname, port):

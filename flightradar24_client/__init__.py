@@ -114,15 +114,18 @@ class Feed:
     """Data format independent feed."""
 
     def __init__(self, home_coordinates, apply_filters=True,
-                 filter_radius=None, hostname=None, port=None, loop=None,
-                 session=None):
+                 filter_radius=None, url=None, hostname=None, port=None,
+                 loop=None, session=None):
         """Initialise feed."""
         self._home_coordinates = home_coordinates
         self._apply_filters = apply_filters
         self._filter_radius = filter_radius
         self._loop = loop
         self._session = session
-        self._url = self._create_url(hostname, port)
+        if url:
+            self._url = url
+        else:
+            self._url = self._create_url(hostname, port)
 
     def __repr__(self):
         """Return string representation of this feed."""
