@@ -3,15 +3,16 @@ Local Flights Feeds.
 
 Format-independent base classes for flights feeds.
 """
+import aiohttp
+import async_timeout
+import asyncio
 import collections
 import datetime
 
 from typing import Optional
 
 import logging
-import requests
 from haversine import haversine
-from json import JSONDecodeError
 
 from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR, \
     ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_ALTITUDE, \
@@ -32,8 +33,8 @@ class FeedAggregator:
         self._filter_radius = filter_radius
         self._stack = collections.deque(DEFAULT_AGGREGATOR_STACK_SIZE * [[]],
                                         DEFAULT_AGGREGATOR_STACK_SIZE)
-        self._callsigns = FixedSizeDict(max=500)
-        self._coordinates = FixedSizeDict(max=500)
+        self._callsigns = FixedSizeDict(max=250)
+        self._coordinates = FixedSizeDict(max=250)
 
     def __repr__(self):
         """Return string representation of this feed aggregator."""
@@ -45,10 +46,10 @@ class FeedAggregator:
         """Return the external feed access."""
         return None
 
-    def update(self):
+    async def update(self):
         """Update from external source, aggregate with previous data and
         return filtered entries."""
-        status, data = self.feed.update()
+        status, data = await self.feed.update()
         if status == UPDATE_OK:
             self._stack.pop()
             self._stack.appendleft(data)
@@ -60,13 +61,14 @@ class FeedAggregator:
             # Fill in callsign from previous update if currently missing.
             if not data[key].callsign and key in self._callsigns:
                 data[key].override(ATTR_CALLSIGN, self._callsigns[key])
-            # Keep record of coordinates.
+            # Keep record of latest coordinates.
             # Here we are considering (lat=0, lon=0) as unwanted coordinates,
             # despite the fact that they are valid. Typically, coordinates
             # (0, 0) indicate that the correct coordinates have not been
             # received.
-            if key not in self._coordinates and data[key].coordinates \
-                    and data[key].coordinates is not INVALID_COORDINATES:
+            if data[key].coordinates \
+                    and data[key].coordinates != INVALID_COORDINATES \
+                    and data[key].coordinates != NONE_COORDINATES:
                 self._coordinates[key] = data[key].coordinates
             # Fill in missing coordinates.
             if (not data[key].coordinates
@@ -91,7 +93,8 @@ class FeedAggregator:
         filtered_entries = list(
             filter(lambda entry:
                    (entry.coordinates is not None) and
-                   (entry.coordinates != (None, None)),
+                   (entry.coordinates != INVALID_COORDINATES) and
+                   (entry.coordinates != NONE_COORDINATES),
                    filtered_entries))
         # Always remove entries on the ground (altitude: 0).
         filtered_entries = list(
@@ -111,13 +114,15 @@ class Feed:
     """Data format independent feed."""
 
     def __init__(self, home_coordinates, apply_filters=True,
-                 filter_radius=None, hostname=None, port=None):
+                 filter_radius=None, hostname=None, port=None, loop=None,
+                 session=None):
         """Initialise feed."""
         self._home_coordinates = home_coordinates
         self._apply_filters = apply_filters
         self._filter_radius = filter_radius
+        self._loop = loop
+        self._session = session
         self._url = self._create_url(hostname, port)
-        self._request = requests.Request(method="GET", url=self._url).prepare()
 
     def __repr__(self):
         """Return string representation of this feed."""
@@ -137,9 +142,9 @@ class Feed:
         """Parse the provided JSON data."""
         pass
 
-    def update(self):
+    async def update(self):
         """Update from external source and return filtered entries."""
-        status, data = self._fetch()
+        status, data = await self._fetch()
         if status == UPDATE_OK:
             if data:
                 feed_entries = []
@@ -160,26 +165,25 @@ class Feed:
             # Error happened while fetching the feed.
             return UPDATE_ERROR, None
 
-    def _fetch(self):
+    async def _fetch(self):
         """Fetch JSON data from external source."""
+        if self._session is None:
+            self._session = aiohttp.ClientSession()
         try:
-            with requests.Session() as session:
-                response = session.send(self._request, timeout=10)
-            if response.ok:
-                entries = self._parse(response.text)
+            async with async_timeout.timeout(10, loop=self._loop):
+                response = await self._session.get(self._url)
+                # Raise error if status >= 400.
+                response.raise_for_status()
+                data = await response.json()
+                entries = self._parse(data)
                 return UPDATE_OK, entries
-            else:
-                _LOGGER.warning(
-                    "Fetching data from %s failed with status %s",
-                    self._request.url, response.status_code)
-                return UPDATE_ERROR, None
-        except requests.exceptions.RequestException as request_ex:
+        except aiohttp.ClientError as client_error:
             _LOGGER.warning("Fetching data from %s failed with %s",
-                            self._request.url, request_ex)
+                            self._url, client_error)
             return UPDATE_ERROR, None
-        except JSONDecodeError as decode_ex:
-            _LOGGER.warning("Unable to parse JSON from %s: %s",
-                            self._request.url, decode_ex)
+        except asyncio.TimeoutError as timeout_error:
+            _LOGGER.warning("Fetching data from %s failed with %s",
+                            self._url, timeout_error)
             return UPDATE_ERROR, None
 
     def _filter_entries(self, entries):

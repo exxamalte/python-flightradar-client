@@ -5,7 +5,8 @@ with open("README.md", "r") as fh:
 
 REQUIRES = [
     'haversine>=1.0.1',
-    'requests>=2.20.0',
+    'aiohttp',
+    'async_timeout'
 ]
 
 setup(
