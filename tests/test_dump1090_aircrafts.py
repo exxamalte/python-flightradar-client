@@ -33,7 +33,7 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         status, entries = loop.run_until_complete(feed.update())
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
-        assert len(entries) == 5
+        assert len(entries) == 4
 
         feed_entry = entries['7c6d9a']
         assert feed_entry.external_id == "7c6d9a"
@@ -130,7 +130,7 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         status, entries = loop.run_until_complete(feed_aggregator.update())
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
-        assert len(entries) == 5
+        assert len(entries) == 4
 
         feed_entry = entries['7c6b28']
         assert feed_entry.external_id == "7c6b28"

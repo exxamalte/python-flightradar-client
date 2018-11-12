@@ -172,16 +172,11 @@ class Feed:
         try:
             async with async_timeout.timeout(10, loop=self._loop):
                 response = await self._session.get(self._url)
-            # TODO: check more status codes
-            if response.status == 200:
+                # Raise error if status >= 400.
+                response.raise_for_status()
                 data = await response.json()
                 entries = self._parse(data)
                 return UPDATE_OK, entries
-            else:
-                _LOGGER.warning(
-                    "Fetching data from %s failed with status %s",
-                    self._url, response.status)
-                return UPDATE_ERROR, None
         except aiohttp.ClientError as client_error:
             _LOGGER.warning("Fetching data from %s failed with %s",
                             self._url, client_error)
@@ -189,10 +184,6 @@ class Feed:
         except asyncio.TimeoutError as timeout_error:
             _LOGGER.warning("Fetching data from %s failed with %s",
                             self._url, timeout_error)
-            return UPDATE_ERROR, None
-        except aiohttp.ContentTypeError as decode_ex:
-            _LOGGER.warning("Unable to parse JSON from %s: %s",
-                            self._url, decode_ex)
             return UPDATE_ERROR, None
 
     def _filter_entries(self, entries):
