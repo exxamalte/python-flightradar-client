@@ -149,6 +149,19 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
         assert feed_entry.altitude == 22175
         assert feed_entry.callsign == "JST423"
 
+    @aioresponses()
+    def test_feed_aggregator_update_error(self, mock_session):
+        """Test updating feed aggregator results in error."""
+        loop = asyncio.get_event_loop()
+        home_coordinates = (-31.0, 151.0)
+        mock_session.get('http://localhost:8754/flights.json', status=500,
+                         body='ERROR')
+
+        feed_aggregator = Flightradar24FlightsFeedAggregator(home_coordinates)
+        status, entries = loop.run_until_complete(feed_aggregator.update())
+        assert status == UPDATE_ERROR
+        self.assertIsNone(entries)
+
     def test_entry_without_data(self):
         """Test simple entry without data."""
         entry = FeedEntry(None, None)
