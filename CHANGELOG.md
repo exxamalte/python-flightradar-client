@@ -1,5 +1,8 @@
 # Changes
 
+## 0.3 (13/11/2018)
+* Simple Feed Manager for all feeds added.
+
 ## 0.2 (13/11/2018)
 * Support for aiohttp library.
 * Full URL configurable (instead of just hostname and port number).
