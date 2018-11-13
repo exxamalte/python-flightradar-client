@@ -9,6 +9,7 @@ from flightradar24_client import Feed, FeedEntry, FeedAggregator
 from flightradar24_client.consts import ATTR_VERT_RATE, ATTR_SQUAWK, \
     ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, \
     ATTR_ALTITUDE, ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE
+from flightradar24_client.feed_manager import FeedManagerBase
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,6 +17,21 @@ DEFAULT_HOSTNAME = 'localhost'
 DEFAULT_PORT = 8754
 
 URL_TEMPLATE = "http://{}:{}/flights.json"
+
+
+class Flightradar24FlightsFeedManager(FeedManagerBase):
+    """Feed Manager for Flightradar24 Flights feed."""
+
+    def __init__(self, generate_callback, update_callback, remove_callback,
+                 coordinates, filter_radius=None, url=None,
+                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT, loop=None,
+                 session=None):
+        """Initialize the NSW Rural Fire Services Feed Manager."""
+        feed = Flightradar24FlightsFeedAggregator(
+            coordinates, filter_radius=filter_radius, url=url,
+            hostname=hostname, port=port, loop=loop, session=session)
+        super().__init__(feed, generate_callback, update_callback,
+                         remove_callback)
 
 
 class Flightradar24FlightsFeedAggregator(FeedAggregator):
