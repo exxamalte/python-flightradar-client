@@ -10,6 +10,7 @@ from flightradar24_client.consts import ATTR_VERT_RATE, ATTR_SQUAWK, \
     ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, ATTR_ALTITUDE, \
     ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE, ATTR_LON, ATTR_LAT, ATTR_HEX, \
     ATTR_FLIGHT
+from flightradar24_client.feed_manager import FeedManagerBase
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -18,6 +19,20 @@ DEFAULT_PORT = 8888
 
 URL_TEMPLATE = "http://{}:{}/data/aircraft.json"
 
+
+class Dump1090AircraftsFeedManager(FeedManagerBase):
+    """Feed Manager for Dump1090 Aircrafts feed."""
+
+    def __init__(self, generate_callback, update_callback, remove_callback,
+                 coordinates, filter_radius=None, url=None,
+                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT, loop=None,
+                 session=None):
+        """Initialize the NSW Rural Fire Services Feed Manager."""
+        feed = Dump1090AircraftsFeedAggregator(
+            coordinates, filter_radius=filter_radius, url=url,
+            hostname=hostname, port=port, loop=loop, session=session)
+        super().__init__(feed, generate_callback, update_callback,
+                         remove_callback)
 
 class Dump1090AircraftsFeedAggregator(FeedAggregator):
     """Aggregates date received from the feed over a period of time."""

@@ -8,7 +8,7 @@ import unittest
 from flightradar24_client import FeedEntry
 from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR
 from flightradar24_client.dump1090_aircrafts import Dump1090AircraftsFeed, \
-    Dump1090AircraftsFeedAggregator
+    Dump1090AircraftsFeedAggregator, Dump1090AircraftsFeedManager
 from tests.utils import load_fixture
 
 
@@ -177,6 +177,52 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         assert status == UPDATE_OK
         self.assertIsNotNone(entries)
         assert len(entries) == 1
+
+    @aioresponses()
+    def test_feed_manager(self, mock_session):
+        """Test the feed manager."""
+        loop = asyncio.get_event_loop()
+        home_coordinates = (-31.0, 151.0)
+        mock_session.get('http://localhost:8888/data/aircraft.json',
+                         status=200,
+                         body=load_fixture('dump1090-aircrafts-1.json'))
+
+        # This will just record calls and keep track of external ids.
+        generated_entity_external_ids = []
+        updated_entity_external_ids = []
+        removed_entity_external_ids = []
+
+        def _generate_entity(external_id):
+            """Generate new entity."""
+            generated_entity_external_ids.append(external_id)
+
+        def _update_entity(external_id):
+            """Update entity."""
+            updated_entity_external_ids.append(external_id)
+
+        def _remove_entity(external_id):
+            """Remove entity."""
+            removed_entity_external_ids.append(external_id)
+
+        feed_manager = Dump1090AircraftsFeedManager(_generate_entity,
+                                                    _update_entity,
+                                                    _remove_entity,
+                                                    home_coordinates,
+                                                    None)
+        assert repr(feed_manager) == "<Dump1090AircraftsFeedManager(feed=" \
+                                     "<Dump1090AircraftsFeedAggregator" \
+                                     "(feed=<Dump1090AircraftsFeed(" \
+                                     "home=(-31.0, 151.0), " \
+                                     "url=http://localhost:8888/" \
+                                     "data/aircraft.json, " \
+                                     "radius=None)>)>)>"
+        loop.run_until_complete(feed_manager.update())
+        entries = feed_manager.feed_entries
+        self.assertIsNotNone(entries)
+        assert len(entries) == 4
+        assert len(generated_entity_external_ids) == 4
+        assert len(updated_entity_external_ids) == 0
+        assert len(removed_entity_external_ids) == 0
 
     def test_entry_without_data(self):
         """Test simple entry without data."""
