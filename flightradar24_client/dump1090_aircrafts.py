@@ -6,10 +6,10 @@ Fetches JSON feed from a local Dump1090 aircrafts feed.
 import logging
 
 from flightradar24_client import Feed, FeedEntry, FeedAggregator
-from flightradar24_client.consts import ATTR_VERT_RATE, ATTR_SQUAWK, \
-    ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, ATTR_ALTITUDE, \
-    ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE, ATTR_LON, ATTR_LAT, ATTR_HEX, \
-    ATTR_FLIGHT
+from flightradar24_client.consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
+    ATTR_FLIGHT, ATTR_HEX, ATTR_LAT, ATTR_LATITUDE, ATTR_LON, \
+    ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK, ATTR_TRACK, \
+    ATTR_UPDATED, ATTR_VERT_RATE
 from flightradar24_client.feed_manager import FeedManagerBase
 
 _LOGGER = logging.getLogger(__name__)
@@ -33,6 +33,7 @@ class Dump1090AircraftsFeedManager(FeedManagerBase):
             hostname=hostname, port=port, loop=loop, session=session)
         super().__init__(feed, generate_callback, update_callback,
                          remove_callback)
+
 
 class Dump1090AircraftsFeedAggregator(FeedAggregator):
     """Aggregates date received from the feed over a period of time."""
