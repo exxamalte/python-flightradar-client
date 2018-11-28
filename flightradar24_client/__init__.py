@@ -125,12 +125,9 @@ class Feed:
         self._apply_filters = apply_filters
         self._filter_radius = filter_radius
         self._loop = loop
+        self._session = session
         if session:
-            self._session = session
             self._client_session_created = False
-        else:
-            self._session = aiohttp.ClientSession()
-            self._client_session_created = True
         if url:
             self._url = url
         else:
@@ -188,6 +185,9 @@ class Feed:
 
     async def _fetch(self):
         """Fetch JSON data from external source."""
+        if not self._session:
+            self._session = aiohttp.ClientSession()
+            self._client_session_created = True
         try:
             async with async_timeout.timeout(10, loop=self._loop):
                 response = await self._session.get(self._url)

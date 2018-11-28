@@ -192,15 +192,15 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
         updated_entity_external_ids = []
         removed_entity_external_ids = []
 
-        def _generate_entity(external_id):
+        async def _generate_entity(external_id):
             """Generate new entity."""
             generated_entity_external_ids.append(external_id)
 
-        def _update_entity(external_id):
+        async def _update_entity(external_id):
             """Update entity."""
             updated_entity_external_ids.append(external_id)
 
-        def _remove_entity(external_id):
+        async def _remove_entity(external_id):
             """Remove entity."""
             removed_entity_external_ids.append(external_id)
 
