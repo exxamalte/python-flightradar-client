@@ -6,9 +6,9 @@ Fetches JSON feed from a local Flightradar24 flights feed.
 import logging
 
 from flightradar24_client import Feed, FeedEntry, FeedAggregator
-from flightradar24_client.consts import ATTR_VERT_RATE, ATTR_SQUAWK, \
-    ATTR_TRACK, ATTR_UPDATED, ATTR_SPEED, ATTR_CALLSIGN, \
-    ATTR_ALTITUDE, ATTR_MODE_S, ATTR_LONGITUDE, ATTR_LATITUDE
+from flightradar24_client.consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
+    ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK, \
+    ATTR_TRACK, ATTR_UPDATED, ATTR_VERT_RATE
 from flightradar24_client.feed_manager import FeedManagerBase
 
 _LOGGER = logging.getLogger(__name__)
