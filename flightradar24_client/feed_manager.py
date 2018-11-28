@@ -29,7 +29,7 @@ class FeedManagerBase:
         return '<{}(feed={})>'.format(
             self.__class__.__name__, self._feed)
 
-    async def update(self):
+    async def update(self, event):
         """Update the feed and then update connected entities."""
         status, feed_entries = await self._feed.update()
         if status == UPDATE_OK:
