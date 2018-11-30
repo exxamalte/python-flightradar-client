@@ -126,21 +126,10 @@ class Feed:
         self._filter_radius = filter_radius
         self._loop = loop
         self._session = session
-        if session:
-            self._client_session_created = False
         if url:
             self._url = url
         else:
             self._url = self._create_url(hostname, port)
-
-    def __del__(self):
-        """Clean up feed."""
-        asyncio.ensure_future(self._cleanup())
-
-    async def _cleanup(self):
-        """Close the session, but only if it was created here."""
-        if self._client_session_created:
-            await self._session.close()
 
     def __repr__(self):
         """Return string representation of this feed."""
@@ -187,9 +176,9 @@ class Feed:
         """Fetch JSON data from external source."""
         if not self._session:
             self._session = aiohttp.ClientSession()
-            self._client_session_created = True
         try:
-            async with async_timeout.timeout(10, loop=self._loop):
+            async with async_timeout.timeout(10, loop=self._loop), \
+                       self._session:
                 response = await self._session.get(self._url)
                 # Raise error if status >= 400.
                 response.raise_for_status()
