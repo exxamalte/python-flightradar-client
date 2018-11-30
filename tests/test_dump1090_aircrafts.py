@@ -216,7 +216,7 @@ class TestDump1090AircraftsFeed(unittest.TestCase):
                                      "url=http://localhost:8888/" \
                                      "data/aircraft.json, " \
                                      "radius=None)>)>)>"
-        loop.run_until_complete(feed_manager.update())
+        loop.run_until_complete(feed_manager.update(None))
         entries = feed_manager.feed_entries
         self.assertIsNotNone(entries)
         assert len(entries) == 4

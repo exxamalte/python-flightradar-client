@@ -221,7 +221,7 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
                                      "url=http://localhost:8754/" \
                                      "flights.json, " \
                                      "radius=None)>)>)>"
-        loop.run_until_complete(feed_manager.update())
+        loop.run_until_complete(feed_manager.update(None))
         entries = feed_manager.feed_entries
         self.assertIsNotNone(entries)
         assert len(entries) == 5
@@ -242,7 +242,7 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
         mock_session.get('http://localhost:8754/flights.json', status=200,
                          body=load_fixture('fr24-flights-3.json'))
 
-        loop.run_until_complete(feed_manager.update())
+        loop.run_until_complete(feed_manager.update(None))
         entries = feed_manager.feed_entries
         self.assertIsNotNone(entries)
         assert len(entries) == 5
@@ -262,7 +262,7 @@ class TestFlightradar24FlightsFeed(unittest.TestCase):
         mock_session.get('http://localhost:8754/flights.json', status=500,
                          body='ERROR')
 
-        loop.run_until_complete(feed_manager.update())
+        loop.run_until_complete(feed_manager.update(None))
         entries = feed_manager.feed_entries
 
         assert len(entries) == 0
