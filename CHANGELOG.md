@@ -1,5 +1,9 @@
 # Changes
 
+## 0.5 (04/11/2018)
+* Fixed async code and session handling
+* Project and library naming streamlined
+
 ## 0.3 (13/11/2018)
 * Simple Feed Manager for all feeds added.
 
