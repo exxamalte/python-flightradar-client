@@ -18,6 +18,7 @@ from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR, \
     ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_ALTITUDE, \
     ATTR_CALLSIGN, ATTR_SPEED, ATTR_TRACK, ATTR_SQUAWK, ATTR_VERT_RATE, \
     ATTR_UPDATED, INVALID_COORDINATES, NONE_COORDINATES
+from flightradar24_client.exceptions import FlightradarException
 from flightradar24_client.utils import FixedSizeDict
 
 _LOGGER = logging.getLogger(__name__)
@@ -117,15 +118,17 @@ class FeedAggregator:
 class Feed:
     """Data format independent feed."""
 
-    def __init__(self, home_coordinates, apply_filters=True,
-                 filter_radius=None, url=None, hostname=None, port=None,
-                 loop=None, session=None):
+    def __init__(self, home_coordinates, session, loop=None,
+                 apply_filters=True, filter_radius=None, url=None,
+                 hostname=None, port=None):
         """Initialise feed."""
         self._home_coordinates = home_coordinates
         self._apply_filters = apply_filters
         self._filter_radius = filter_radius
-        self._loop = loop
+        if session is None:
+            raise FlightradarException("Session must not be None")
         self._session = session
+        self._loop = loop
         if url:
             self._url = url
         else:
@@ -174,11 +177,8 @@ class Feed:
 
     async def _fetch(self):
         """Fetch JSON data from external source."""
-        if not self._session:
-            self._session = aiohttp.ClientSession()
         try:
-            async with async_timeout.timeout(10, loop=self._loop), \
-                       self._session:
+            async with async_timeout.timeout(10, loop=self._loop):
                 response = await self._session.get(self._url)
                 # Raise error if status >= 400.
                 response.raise_for_status()
