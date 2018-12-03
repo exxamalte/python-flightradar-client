@@ -1,6 +1,6 @@
 # Changes
 
-## 0.5 (04/11/2018)
+## 0.5 (04/12/2018)
 * Fixed async code and session handling
 * Project and library naming streamlined
 
