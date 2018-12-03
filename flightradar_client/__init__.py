@@ -14,12 +14,12 @@ from typing import Optional
 import logging
 from haversine import haversine
 
-from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR, \
+from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR, \
     ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_ALTITUDE, \
     ATTR_CALLSIGN, ATTR_SPEED, ATTR_TRACK, ATTR_SQUAWK, ATTR_VERT_RATE, \
     ATTR_UPDATED, INVALID_COORDINATES, NONE_COORDINATES
-from flightradar24_client.exceptions import FlightradarException
-from flightradar24_client.utils import FixedSizeDict
+from flightradar_client.exceptions import FlightradarException
+from flightradar_client.utils import FixedSizeDict
 
 _LOGGER = logging.getLogger(__name__)
 
