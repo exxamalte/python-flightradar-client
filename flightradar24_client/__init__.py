@@ -18,6 +18,7 @@ from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR, \
     ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_ALTITUDE, \
     ATTR_CALLSIGN, ATTR_SPEED, ATTR_TRACK, ATTR_SQUAWK, ATTR_VERT_RATE, \
     ATTR_UPDATED, INVALID_COORDINATES, NONE_COORDINATES
+from flightradar24_client.exceptions import FlightradarException
 from flightradar24_client.utils import FixedSizeDict
 
 _LOGGER = logging.getLogger(__name__)
@@ -117,33 +118,21 @@ class FeedAggregator:
 class Feed:
     """Data format independent feed."""
 
-    def __init__(self, home_coordinates, apply_filters=True,
-                 filter_radius=None, url=None, hostname=None, port=None,
-                 loop=None, session=None):
+    def __init__(self, home_coordinates, session, loop=None,
+                 apply_filters=True, filter_radius=None, url=None,
+                 hostname=None, port=None):
         """Initialise feed."""
         self._home_coordinates = home_coordinates
         self._apply_filters = apply_filters
         self._filter_radius = filter_radius
+        if session is None:
+            raise FlightradarException("Session must not be None")
+        self._session = session
         self._loop = loop
-        if session:
-            self._session = session
-            self._client_session_created = False
-        else:
-            self._session = aiohttp.ClientSession()
-            self._client_session_created = True
         if url:
             self._url = url
         else:
             self._url = self._create_url(hostname, port)
-
-    def __del__(self):
-        """Clean up feed."""
-        asyncio.ensure_future(self._cleanup())
-
-    async def _cleanup(self):
-        """Close the session, but only if it was created here."""
-        if self._client_session_created:
-            await self._session.close()
 
     def __repr__(self):
         """Return string representation of this feed."""

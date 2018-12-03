@@ -23,13 +23,12 @@ class Flightradar24FlightsFeedManager(FeedManagerBase):
     """Feed Manager for Flightradar24 Flights feed."""
 
     def __init__(self, generate_callback, update_callback, remove_callback,
-                 coordinates, filter_radius=None, url=None,
-                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT, loop=None,
-                 session=None):
+                 coordinates, session, loop=None, filter_radius=None, url=None,
+                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
         """Initialize the NSW Rural Fire Services Feed Manager."""
         feed = Flightradar24FlightsFeedAggregator(
-            coordinates, filter_radius=filter_radius, url=url,
-            hostname=hostname, port=port, loop=loop, session=session)
+            coordinates, session, loop=loop, filter_radius=filter_radius,
+            url=url, hostname=hostname, port=port)
         super().__init__(feed, generate_callback, update_callback,
                          remove_callback)
 
@@ -37,14 +36,14 @@ class Flightradar24FlightsFeedManager(FeedManagerBase):
 class Flightradar24FlightsFeedAggregator(FeedAggregator):
     """Aggregates date received from the feed over a period of time."""
 
-    def __init__(self, home_coordinates, filter_radius=None, url=None,
-                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT, loop=None,
-                 session=None):
+    def __init__(self, home_coordinates, session, loop=None,
+                 filter_radius=None, url=None, hostname=DEFAULT_HOSTNAME,
+                 port=DEFAULT_PORT):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
-        self._feed = Flightradar24FlightsFeed(home_coordinates, False,
-                                              filter_radius, url, hostname,
-                                              port, loop, session)
+        self._feed = Flightradar24FlightsFeed(home_coordinates, session,
+                                              loop, False, filter_radius,
+                                              url, hostname, port)
 
     @property
     def feed(self):
@@ -55,11 +54,11 @@ class Flightradar24FlightsFeedAggregator(FeedAggregator):
 class Flightradar24FlightsFeed(Feed):
     """Flightradar24 Flights Feed."""
 
-    def __init__(self, home_coordinates, apply_filters=True,
-                 filter_radius=None, url=None, hostname=DEFAULT_HOSTNAME,
-                 port=DEFAULT_PORT, loop=None, session=None):
-        super().__init__(home_coordinates, apply_filters, filter_radius, url,
-                         hostname, port, loop, session)
+    def __init__(self, home_coordinates, session, loop=None,
+                 apply_filters=True, filter_radius=None, url=None,
+                 hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
+        super().__init__(home_coordinates, session, loop, apply_filters,
+                         filter_radius, url, hostname, port)
 
     def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""

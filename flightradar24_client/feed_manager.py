@@ -29,7 +29,7 @@ class FeedManagerBase:
         return '<{}(feed={})>'.format(
             self.__class__.__name__, self._feed)
 
-    async def update(self):
+    async def update(self, event):
         """Update the feed and then update connected entities."""
         status, feed_entries = await self._feed.update()
         if status == UPDATE_OK:
@@ -59,7 +59,7 @@ class FeedManagerBase:
     async def _generate_new_entities(self, external_ids):
         """Generate new entities for events."""
         for external_id in external_ids:
-            self._generate_callback(external_id)
+            await self._generate_callback(external_id)
             _LOGGER.debug("New entity added %s", external_id)
             self._managed_external_ids.add(external_id)
 
@@ -67,11 +67,11 @@ class FeedManagerBase:
         """Update entities."""
         for external_id in external_ids:
             _LOGGER.debug("Existing entity found %s", external_id)
-            self._update_callback(external_id)
+            await self._update_callback(external_id)
 
     async def _remove_entities(self, external_ids):
         """Remove entities."""
         for external_id in external_ids:
             _LOGGER.debug("Entity not current anymore %s", external_id)
             self._managed_external_ids.remove(external_id)
-            self._remove_callback(external_id)
+            await self._remove_callback(external_id)
