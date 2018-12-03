@@ -5,9 +5,9 @@ import asynctest
 from aioresponses import aioresponses
 import datetime
 
-from flightradar24_client import FeedEntry
-from flightradar24_client.consts import UPDATE_OK, UPDATE_ERROR
-from flightradar24_client.dump1090_aircrafts import Dump1090AircraftsFeed, \
+from flightradar_client import FeedEntry
+from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR
+from flightradar_client.dump1090_aircrafts import Dump1090AircraftsFeed, \
     Dump1090AircraftsFeedAggregator, Dump1090AircraftsFeedManager
 from tests.utils import load_fixture
 

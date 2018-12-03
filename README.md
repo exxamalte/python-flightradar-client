@@ -1,13 +1,13 @@
-# python-flightradar24-client
+# python-flightradar-client
 
-[![Build Status](https://travis-ci.org/exxamalte/python-flightradar24-client.svg)](https://travis-ci.org/exxamalte/python-flightradar24-client)
-[![Coverage Status](https://coveralls.io/repos/github/exxamalte/python-flightradar24-client/badge.svg?branch=master)](https://coveralls.io/github/exxamalte/python-flightradar24-client?branch=master)
+[![Build Status](https://travis-ci.org/exxamalte/python-flightradar-client.svg)](https://travis-ci.org/exxamalte/python-flightradar-client)
+[![Coverage Status](https://coveralls.io/repos/github/exxamalte/python-flightradar-client/badge.svg?branch=master)](https://coveralls.io/github/exxamalte/python-flightradar-client?branch=master)
 
 This library provides convenient access to a local [Flightradar24](https://www.flightradar24.com/) feed.
 
 
 ## Installation
-`pip install flightradar24-client`
+`pip install flightradar-client`
 
 ## Usage
 
@@ -22,12 +22,12 @@ objects. The `*FeedAggregator` class keeps a bit of history and with each
 subsequent `update` call it tries to fill in any gaps (coordinates and callsign 
 at the moment) missing in the latest data set fetched.
 
-### Flightradar24 Feed
+### Flightradar Feed
 
-The Flightradar24 Feed mode uses the JSON data made available by the `fr24feed`
+The Flightradar Feed mode uses the JSON data made available by the `fr24feed`
 service (normally under `http://localhost:8754/flights.json`).
 
-`Flightradar24FlightsFeed` and `Flightradar24FlightsFeedAggregator` support
+`FlightradarFlightsFeed` and `FlightradarFlightsFeedAggregator` support
 the same parameters:
 
 | Name               | Type                                                                                                 | Description                                                                                   |
@@ -42,9 +42,11 @@ the same parameters:
 
 ```python
 import asyncio
-from flightradar24_client.fr24_flights import Flightradar24FlightsFeed
+import aiohttp
+from flightradar_client.fr24feed_flights import FlightradarFlightsFeed
+session = aiohttp.ClientSession()
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed = Flightradar24FlightsFeed((-33.5, 151.5))
+feed = FlightradarFlightsFeed((-33.5, 151.5), session)
 LOOP = asyncio.get_event_loop()
 status, entries = LOOP.run_until_complete(feed.update())
 ```
@@ -53,9 +55,11 @@ status, entries = LOOP.run_until_complete(feed.update())
 
 ```python
 import asyncio
-from flightradar24_client.fr24_flights import Flightradar24FlightsFeedAggregator
+import aiohttp
+from flightradar_client.fr24feed_flights import FlightradarFlightsFeedAggregator
+session = aiohttp.ClientSession()
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed_aggregator = Flightradar24FlightsFeedAggregator((-33.5, 151.5))
+feed_aggregator = FlightradarFlightsFeedAggregator((-33.5, 151.5), session)
 LOOP = asyncio.get_event_loop()
 status, entries = LOOP.run_until_complete(feed_aggregator.update())
 ```
@@ -80,9 +84,11 @@ the same parameters:
 
 ```python
 import asyncio
-from flightradar24_client.dump1090_aircrafts import Dump1090AircraftsFeed
+import aiohttp
+from flightradar_client.dump1090_aircrafts import Dump1090AircraftsFeed
+session = aiohttp.ClientSession()
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed = Dump1090AircraftsFeed((-33.5, 151.5))
+feed = Dump1090AircraftsFeed((-33.5, 151.5), session)
 LOOP = asyncio.get_event_loop()
 status, entries = LOOP.run_until_complete(feed.update())
 ```
@@ -91,9 +97,11 @@ status, entries = LOOP.run_until_complete(feed.update())
 
 ```python
 import asyncio
-from flightradar24_client.dump1090_aircrafts import Dump1090AircraftsFeedAggregator
+import aiohttp
+from flightradar_client.dump1090_aircrafts import Dump1090AircraftsFeedAggregator
+session = aiohttp.ClientSession()
 # Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed_aggregator = Dump1090AircraftsFeedAggregator((-33.5, 151.5))
+feed_aggregator = Dump1090AircraftsFeedAggregator((-33.5, 151.5), session)
 LOOP = asyncio.get_event_loop()
 status, entries = LOOP.run_until_complete(feed_aggregator.update())
 ```

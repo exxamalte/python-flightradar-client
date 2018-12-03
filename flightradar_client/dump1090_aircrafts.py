@@ -5,12 +5,12 @@ Fetches JSON feed from a local Dump1090 aircrafts feed.
 """
 import logging
 
-from flightradar24_client import Feed, FeedEntry, FeedAggregator
-from flightradar24_client.consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
+from flightradar_client import Feed, FeedEntry, FeedAggregator
+from flightradar_client.consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
     ATTR_FLIGHT, ATTR_HEX, ATTR_LAT, ATTR_LATITUDE, ATTR_LON, \
     ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK, ATTR_TRACK, \
     ATTR_UPDATED, ATTR_VERT_RATE
-from flightradar24_client.feed_manager import FeedManagerBase
+from flightradar_client.feed_manager import FeedManagerBase
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -10,14 +10,14 @@ REQUIRES = [
 ]
 
 setup(
-    name="flightradar24_client",
-    version="0.4a5",
+    name="flightradar_client",
+    version="0.5",
     author="Malte Franken",
     author_email="coding@subspace.de",
-    description="Flightradar24 client library.",
+    description="Flightradar client library.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/exxamalte/python-flightradar24-client",
+    url="https://github.com/exxamalte/python-flightradar-client",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3.5",

@@ -1,1 +1,1 @@
-"""Tests for flightradar24-client library."""
+"""Tests for flightradar-client library."""

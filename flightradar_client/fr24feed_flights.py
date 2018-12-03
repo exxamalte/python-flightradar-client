@@ -1,15 +1,15 @@
 """
-Local Flightradar24 Flights Feed.
+Local Flightradar Flights Feed.
 
-Fetches JSON feed from a local Flightradar24 flights feed.
+Fetches JSON feed from a local Flightradar flights feed.
 """
 import logging
 
-from flightradar24_client import Feed, FeedEntry, FeedAggregator
-from flightradar24_client.consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
+from flightradar_client import Feed, FeedEntry, FeedAggregator
+from flightradar_client.consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
     ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK, \
     ATTR_TRACK, ATTR_UPDATED, ATTR_VERT_RATE
-from flightradar24_client.feed_manager import FeedManagerBase
+from flightradar_client.feed_manager import FeedManagerBase
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,21 +19,21 @@ DEFAULT_PORT = 8754
 URL_TEMPLATE = "http://{}:{}/flights.json"
 
 
-class Flightradar24FlightsFeedManager(FeedManagerBase):
-    """Feed Manager for Flightradar24 Flights feed."""
+class FlightradarFlightsFeedManager(FeedManagerBase):
+    """Feed Manager for Flightradar Flights feed."""
 
     def __init__(self, generate_callback, update_callback, remove_callback,
                  coordinates, session, loop=None, filter_radius=None, url=None,
                  hostname=DEFAULT_HOSTNAME, port=DEFAULT_PORT):
         """Initialize the NSW Rural Fire Services Feed Manager."""
-        feed = Flightradar24FlightsFeedAggregator(
+        feed = FlightradarFlightsFeedAggregator(
             coordinates, session, loop=loop, filter_radius=filter_radius,
             url=url, hostname=hostname, port=port)
         super().__init__(feed, generate_callback, update_callback,
                          remove_callback)
 
 
-class Flightradar24FlightsFeedAggregator(FeedAggregator):
+class FlightradarFlightsFeedAggregator(FeedAggregator):
     """Aggregates date received from the feed over a period of time."""
 
     def __init__(self, home_coordinates, session, loop=None,
@@ -41,7 +41,7 @@ class Flightradar24FlightsFeedAggregator(FeedAggregator):
                  port=DEFAULT_PORT):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
-        self._feed = Flightradar24FlightsFeed(home_coordinates, session,
+        self._feed = FlightradarFlightsFeed(home_coordinates, session,
                                               loop, False, filter_radius,
                                               url, hostname, port)
 
@@ -51,8 +51,8 @@ class Flightradar24FlightsFeedAggregator(FeedAggregator):
         return self._feed
 
 
-class Flightradar24FlightsFeed(Feed):
-    """Flightradar24 Flights Feed."""
+class FlightradarFlightsFeed(Feed):
+    """Flightradar Flights Feed."""
 
     def __init__(self, home_coordinates, session, loop=None,
                  apply_filters=True, filter_radius=None, url=None,
