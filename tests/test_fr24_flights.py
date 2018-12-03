@@ -20,7 +20,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
         """Test updating feed is ok."""
         home_coordinates = (-31.0, 151.0)
         mock_aioresponse.get('http://localhost:8754/flights.json', status=200,
-                             body=load_fixture('fr24-flights-1.json'))
+                             body=load_fixture('fr24feed-flights-1.json'))
 
         async with aiohttp.ClientSession() as session:
             feed = FlightradarFlightsFeed(home_coordinates, session)
@@ -56,7 +56,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
         home_coordinates = (-31.0, 151.0)
         custom_url = 'http://something:9876/foo/bar.json'
         mock_aioresponse.get(custom_url, status=200,
-                             body=load_fixture('fr24-flights-1.json'))
+                             body=load_fixture('fr24feed-flights-1.json'))
 
         async with aiohttp.ClientSession() as session:
             feed = FlightradarFlightsFeed(home_coordinates, session,
@@ -78,7 +78,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
         """Test updating feed is ok with filter radius."""
         home_coordinates = (-31.0, 151.0)
         mock_aioresponse.get('http://localhost:8754/flights.json', status=200,
-                             body=load_fixture('fr24-flights-1.json'))
+                             body=load_fixture('fr24feed-flights-1.json'))
 
         async with aiohttp.ClientSession() as session:
             feed = FlightradarFlightsFeed(home_coordinates, session,
@@ -97,7 +97,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
         """Test updating feed without supplying client session."""
         home_coordinates = (-31.0, 151.0)
         mock_aioresponse.get('http://localhost:8754/flights.json', status=200,
-                             body=load_fixture('fr24-flights-1.json'))
+                             body=load_fixture('fr24feed-flights-1.json'))
 
         async with aiohttp.ClientSession() as session:
             with self.assertRaises(FlightradarException):
@@ -162,7 +162,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
             # Update 1
             mock_aioresponse.get('http://localhost:8754/flights.json',
                                  status=200,
-                                 body=load_fixture('fr24-flights-1.json'))
+                                 body=load_fixture('fr24feed-flights-1.json'))
             status, entries = await feed_aggregator.update()
             assert status == UPDATE_OK
             self.assertIsNotNone(entries)
@@ -179,7 +179,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
             # Update 2
             mock_aioresponse.get('http://localhost:8754/flights.json',
                                  status=200,
-                                 body=load_fixture('fr24-flights-2.json'))
+                                 body=load_fixture('fr24feed-flights-2.json'))
             status, entries = await feed_aggregator.update()
             assert status == UPDATE_OK
             self.assertIsNotNone(entries)
@@ -210,7 +210,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
         """Test the feed manager."""
         home_coordinates = (-31.0, 151.0)
         mock_aioresponse.get('http://localhost:8754/flights.json', status=200,
-                             body=load_fixture('fr24-flights-1.json'))
+                             body=load_fixture('fr24feed-flights-1.json'))
 
         # This will just record calls and keep track of external ids.
         generated_entity_external_ids = []
@@ -264,7 +264,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
 
             mock_aioresponse.get('http://localhost:8754/flights.json',
                                  status=200,
-                                 body=load_fixture('fr24-flights-3.json'))
+                                 body=load_fixture('fr24feed-flights-3.json'))
 
             await feed_manager.update(None)
             entries = feed_manager.feed_entries
