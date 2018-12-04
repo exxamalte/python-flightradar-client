@@ -17,13 +17,16 @@ from haversine import haversine
 from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR, \
     ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_ALTITUDE, \
     ATTR_CALLSIGN, ATTR_SPEED, ATTR_TRACK, ATTR_SQUAWK, ATTR_VERT_RATE, \
-    ATTR_UPDATED, INVALID_COORDINATES, NONE_COORDINATES
+    ATTR_UPDATED, INVALID_COORDINATES, NONE_COORDINATES, UPDATE_TIMEOUT
 from flightradar_client.exceptions import FlightradarException
 from flightradar_client.utils import FixedSizeDict
 
 _LOGGER = logging.getLogger(__name__)
 
 DEFAULT_AGGREGATOR_STACK_SIZE = 10
+
+# Request timeout in seconds
+DEFAULT_REQUEST_TIMEOUT = 10
 
 
 class FeedAggregator:
@@ -167,18 +170,19 @@ class Feed:
                 # Rebuild the entries and use external id as key.
                 result_entries = {entry.external_id: entry
                                   for entry in filtered_entries}
-                return UPDATE_OK, result_entries
+                return status, result_entries
             else:
                 # Should not happen.
-                return UPDATE_OK, None
+                return status, None
         else:
             # Error happened while fetching the feed.
-            return UPDATE_ERROR, None
+            return status, None
 
     async def _fetch(self):
         """Fetch JSON data from external source."""
         try:
-            async with async_timeout.timeout(10, loop=self._loop):
+            async with async_timeout.timeout(DEFAULT_REQUEST_TIMEOUT,
+                                             loop=self._loop):
                 response = await self._session.get(self._url)
                 # Raise error if status >= 400.
                 response.raise_for_status()
@@ -189,10 +193,11 @@ class Feed:
             _LOGGER.warning("Fetching data from %s failed with %s",
                             self._url, client_error)
             return UPDATE_ERROR, None
-        except asyncio.TimeoutError as timeout_error:
-            _LOGGER.warning("Fetching data from %s failed with %s",
-                            self._url, timeout_error)
-            return UPDATE_ERROR, None
+        except asyncio.TimeoutError:
+            _LOGGER.warning("Fetching data from %s failed with timeout "
+                            "of %s seconds",
+                            self._url, DEFAULT_REQUEST_TIMEOUT)
+            return UPDATE_TIMEOUT, None
 
     def _filter_entries(self, entries):
         """Filter the provided entries."""

@@ -6,7 +6,7 @@ from aioresponses import aioresponses
 import datetime
 
 from flightradar_client import FeedEntry, FlightradarException
-from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR
+from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR, UPDATE_TIMEOUT
 from flightradar_client.fr24feed_flights import FlightradarFlightsFeed, \
     FlightradarFlightsFeedAggregator, FlightradarFlightsFeedManager
 from tests.utils import load_fixture
@@ -140,7 +140,7 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
         async with aiohttp.ClientSession() as session:
             feed = FlightradarFlightsFeed(home_coordinates, session)
             status, entries = await feed.update()
-            assert status == UPDATE_ERROR
+            assert status == UPDATE_TIMEOUT
             self.assertIsNone(entries)
 
     @aioresponses()
