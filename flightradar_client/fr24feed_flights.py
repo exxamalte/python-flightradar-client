@@ -5,7 +5,8 @@ Fetches JSON feed from a local Flightradar flights feed.
 """
 import logging
 
-from flightradar_client import Feed, FeedEntry, FeedAggregator
+from flightradar_client import Feed, FeedEntry
+from flightradar_client.feed_aggregator import FeedAggregator
 from flightradar_client.consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
     ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK, \
     ATTR_TRACK, ATTR_UPDATED, ATTR_VERT_RATE
@@ -41,9 +42,9 @@ class FlightradarFlightsFeedAggregator(FeedAggregator):
                  port=DEFAULT_PORT):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
-        self._feed = FlightradarFlightsFeed(home_coordinates, session,
-                                              loop, False, filter_radius,
-                                              url, hostname, port)
+        self._feed = FlightradarFlightsFeed(
+            home_coordinates, session, loop, False, filter_radius, url,
+            hostname, port)
 
     @property
     def feed(self):

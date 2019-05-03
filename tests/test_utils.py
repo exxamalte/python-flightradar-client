@@ -1,7 +1,7 @@
 """Test for the library utils."""
 import unittest
 
-from flightradar_client import FixedSizeDict
+from flightradar_client.utils import FixedSizeDict
 
 
 class TestFixedSizeDict(unittest.TestCase):
