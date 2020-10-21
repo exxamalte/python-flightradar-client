@@ -173,6 +173,8 @@ class TestFlightradarFlightsFeed(asynctest.TestCase):
             assert feed_entry.coordinates == (-32.5470, 150.9698)
             assert feed_entry.altitude == 22175
             assert feed_entry.callsign == "JST423"
+            self.assertIsNotNone(feed_entry.statistics)
+            assert feed_entry.statistics.success_ratio() == 1.0
 
             assert repr(feed_entry) == "<FeedEntry(id=7C6B28)>"
 
