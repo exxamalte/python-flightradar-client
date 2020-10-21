@@ -22,10 +22,10 @@ class TestStatistics(asynctest.TestCase):
         statistics_data._total = 0
         assert repr(statistics_data) == "<StatisticsData(0.0%)>"
         # 1. successful update.
-        statistics_data.update_successful()
+        statistics_data.retrieval_successful()
         assert repr(statistics_data) == "<StatisticsData(100.0%)>"
         # 2. unsuccessful update.
-        statistics_data.update_unsuccessful()
+        statistics_data.retrieval_unsuccessful()
         assert repr(statistics_data) == "<StatisticsData(50.0%)>"
 
     async def test_update(self):
@@ -33,12 +33,12 @@ class TestStatistics(asynctest.TestCase):
         statistics = Statistics()
         KEYS = ["a", "b", "c"]
         # 1. successful update.
-        await statistics.update_successful(KEYS)
+        await statistics.retrieval_successful(KEYS)
         assert statistics.get("a").success_ratio() == 1.0
         # 2. successful update.
-        await statistics.update_successful(KEYS)
+        await statistics.retrieval_successful(KEYS)
         assert statistics.get("a").success_ratio() == 1.0
         # 3. unsuccessful update.
-        await statistics.update_unsuccessful()
+        await statistics.retrieval_unsuccessful()
         self.assertAlmostEqual(statistics.get("a").success_ratio(), 0.666, 2)
         assert repr(statistics.get("a")) == "<StatisticsData(66.7%)>"

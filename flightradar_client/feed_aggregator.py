@@ -47,7 +47,7 @@ class FeedAggregator:
             # Fill in some gaps in data received.
             await self._update_cache(data)
             # Update statistics
-            await self._statistics.update_successful(data.keys())
+            await self._statistics.retrieval_successful(data.keys())
             # Filter entries.
             filtered_entries = await self._filter_entries(data.values())
             # Insert statistics data.
@@ -58,7 +58,7 @@ class FeedAggregator:
                               for entry in filtered_entries}
             return status, result_entries
         # Update statistics
-        await self._statistics.update_unsuccessful()
+        await self._statistics.retrieval_unsuccessful()
         return status, None
 
     async def _update_cache(self, data):
