@@ -5,7 +5,8 @@ import asynctest
 from aioresponses import aioresponses
 import datetime
 
-from flightradar_client import FeedEntry, FlightradarException
+from flightradar_client.exceptions import FlightradarException
+from flightradar_client.feed_entry import FeedEntry
 from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR
 from flightradar_client.fr24feed_flights import FlightradarFlightsFeed, \
     FlightradarFlightsFeedAggregator, FlightradarFlightsFeedManager

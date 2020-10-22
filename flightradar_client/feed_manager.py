@@ -5,7 +5,7 @@ This allows managing feeds and their entries throughout their life-cycle.
 """
 import logging
 
-from flightradar_client import UPDATE_OK
+from .consts import UPDATE_OK
 
 _LOGGER = logging.getLogger(__name__)
 
