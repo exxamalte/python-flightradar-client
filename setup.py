@@ -1,7 +1,12 @@
+import os
+
 from setuptools import setup, find_packages
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+NAME = "flightradar_client"
+AUTHOR = "Malte Franken"
+AUTHOR_EMAIL = "coding@subspace.de"
+DESCRIPTION = "Flightradar client library."
+URL = "https://github.com/exxamalte/python-flightradar-client"
 
 REQUIRES = [
     'haversine>=1.0.1',
@@ -9,15 +14,24 @@ REQUIRES = [
     'async_timeout'
 ]
 
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+VERSION = {}
+with open(os.path.join(HERE, NAME, "__version__.py")) as f:
+    exec(f.read(), VERSION)  # pylint: disable=exec-used
+
 setup(
-    name="flightradar_client",
-    version="0.5",
-    author="Malte Franken",
-    author_email="coding@subspace.de",
-    description="Flightradar client library.",
+    name=NAME,
+    version=VERSION["__version__"],
+    author=AUTHOR,
+    author_email=AUTHOR_EMAIL,
+    description=DESCRIPTION,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/exxamalte/python-flightradar-client",
+    url=URL,
     packages=find_packages(exclude=("tests*",)),
     classifiers=[
         "Programming Language :: Python :: 3.6",
