@@ -5,12 +5,12 @@ Fetches JSON feed from a local Flightradar flights feed.
 """
 import logging
 
-from .feed_entry import FeedEntry
+from .consts import (ATTR_ALTITUDE, ATTR_CALLSIGN, ATTR_LATITUDE,
+                     ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK,
+                     ATTR_TRACK, ATTR_UPDATED, ATTR_VERT_RATE)
 from .feed import Feed
 from .feed_aggregator import FeedAggregator
-from .consts import ATTR_ALTITUDE, ATTR_CALLSIGN, \
-    ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK, \
-    ATTR_TRACK, ATTR_UPDATED, ATTR_VERT_RATE
+from .feed_entry import FeedEntry
 from .feed_manager import FeedManagerBase
 
 _LOGGER = logging.getLogger(__name__)

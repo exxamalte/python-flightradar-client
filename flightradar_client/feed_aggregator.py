@@ -2,8 +2,8 @@
 import collections
 import logging
 
-from .consts import ATTR_CALLSIGN, ATTR_LATITUDE, ATTR_LONGITUDE, \
-    INVALID_COORDINATES, NONE_COORDINATES, UPDATE_OK
+from .consts import (ATTR_CALLSIGN, ATTR_LATITUDE, ATTR_LONGITUDE,
+                     INVALID_COORDINATES, NONE_COORDINATES, UPDATE_OK)
 from .statistics import Statistics
 from .utils import FixedSizeDict
 

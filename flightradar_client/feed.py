@@ -5,7 +5,7 @@ import logging
 import aiohttp
 import async_timeout
 
-from .consts import UPDATE_OK, UPDATE_ERROR
+from .consts import UPDATE_ERROR, UPDATE_OK
 from .exceptions import FlightradarException
 
 _LOGGER = logging.getLogger(__name__)

@@ -1,6 +1,5 @@
 """Test for the statistics collector."""
 import asynctest
-
 from flightradar_client.statistics import Statistics, StatisticsData
 
 

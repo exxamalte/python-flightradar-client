@@ -5,9 +5,9 @@ from typing import Optional
 
 from haversine import haversine
 
-from .consts import ATTR_LATITUDE, ATTR_LONGITUDE, ATTR_MODE_S, \
-    ATTR_ALTITUDE, ATTR_CALLSIGN, ATTR_SPEED, ATTR_TRACK, ATTR_SQUAWK, \
-    ATTR_VERT_RATE, ATTR_UPDATED
+from .consts import (ATTR_ALTITUDE, ATTR_CALLSIGN, ATTR_LATITUDE,
+                     ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK,
+                     ATTR_TRACK, ATTR_UPDATED, ATTR_VERT_RATE)
 from .statistics import StatisticsData
 
 _LOGGER = logging.getLogger(__name__)
