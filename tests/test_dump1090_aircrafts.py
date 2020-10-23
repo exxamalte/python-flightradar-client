@@ -1,14 +1,16 @@
 """Test for the Dump1090 Aircrafts feed."""
-import aiohttp
 import asyncio
-import asynctest
-from aioresponses import aioresponses
 import datetime
 
-from flightradar_client import FeedEntry
-from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR
-from flightradar_client.dump1090_aircrafts import Dump1090AircraftsFeed, \
-    Dump1090AircraftsFeedAggregator, Dump1090AircraftsFeedManager
+import aiohttp
+import asynctest
+from aioresponses import aioresponses
+from flightradar_client.consts import UPDATE_ERROR, UPDATE_OK
+from flightradar_client.dump1090_aircrafts import (
+    Dump1090AircraftsFeed, Dump1090AircraftsFeedAggregator,
+    Dump1090AircraftsFeedManager)
+from flightradar_client.feed_entry import FeedEntry
+
 from tests.utils import load_fixture
 
 

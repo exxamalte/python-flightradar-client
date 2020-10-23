@@ -1,14 +1,17 @@
 """Test for the Flightsradar24 feed."""
-import aiohttp
 import asyncio
-import asynctest
-from aioresponses import aioresponses
 import datetime
 
-from flightradar_client import FeedEntry, FlightradarException
-from flightradar_client.consts import UPDATE_OK, UPDATE_ERROR
-from flightradar_client.fr24feed_flights import FlightradarFlightsFeed, \
-    FlightradarFlightsFeedAggregator, FlightradarFlightsFeedManager
+import aiohttp
+import asynctest
+from aioresponses import aioresponses
+from flightradar_client.consts import UPDATE_ERROR, UPDATE_OK
+from flightradar_client.exceptions import FlightradarException
+from flightradar_client.feed_entry import FeedEntry
+from flightradar_client.fr24feed_flights import (
+    FlightradarFlightsFeed, FlightradarFlightsFeedAggregator,
+    FlightradarFlightsFeedManager)
+
 from tests.utils import load_fixture
 
 

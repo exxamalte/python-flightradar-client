@@ -1,5 +1,5 @@
 """Feed statistics."""
-from flightradar_client.utils import FixedSizeDict
+from .utils import FixedSizeDict
 
 DEFAULT_STATISTICS_ENTRY_SIZE = 250
 

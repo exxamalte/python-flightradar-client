@@ -2,10 +2,10 @@
 import collections
 import logging
 
-from flightradar_client import ATTR_CALLSIGN, ATTR_LATITUDE, ATTR_LONGITUDE, \
-    INVALID_COORDINATES, NONE_COORDINATES, UPDATE_OK
-from flightradar_client.statistics import Statistics
-from flightradar_client.utils import FixedSizeDict
+from .consts import (ATTR_CALLSIGN, ATTR_LATITUDE, ATTR_LONGITUDE,
+                     INVALID_COORDINATES, NONE_COORDINATES, UPDATE_OK)
+from .statistics import Statistics
+from .utils import FixedSizeDict
 
 _LOGGER = logging.getLogger(__name__)
 
