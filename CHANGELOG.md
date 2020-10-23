@@ -1,5 +1,11 @@
 # Changes
 
+## 0.6 (22/10/2020)
+* Added basic statistics to feed aggregator.
+* Exclude tests from package.
+* Added Python 3.8 support.
+* Drop Python 3.5 support.
+
 ## 0.5 (04/12/2018)
 * Fixed async code and session handling
 * Project and library naming streamlined
