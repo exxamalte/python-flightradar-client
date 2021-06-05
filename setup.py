@@ -10,7 +10,7 @@ URL = "https://github.com/exxamalte/python-flightradar-client"
 
 REQUIRES = [
     'haversine>=1.0.1',
-    'aiohttp',
+    'aiohttp>=3.7.4,<4',
     'async_timeout'
 ]
 
