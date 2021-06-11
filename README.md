@@ -1,7 +1,9 @@
 # python-flightradar-client
 
-[![Build Status](https://travis-ci.org/exxamalte/python-flightradar-client.svg)](https://travis-ci.org/exxamalte/python-flightradar-client)
+[![Build Status](https://travis-ci.com/exxamalte/python-flightradar-client.svg)](https://travis-ci.com/exxamalte/python-flightradar-client)
 [![Coverage Status](https://coveralls.io/repos/github/exxamalte/python-flightradar-client/badge.svg?branch=master)](https://coveralls.io/github/exxamalte/python-flightradar-client?branch=master)
+[![PyPi](https://img.shields.io/pypi/v/flightradar-client.svg)](https://pypi.python.org/pypi/flightradar-client)
+[![Version](https://img.shields.io/pypi/pyversions/flightradar-client.svg)](https://pypi.python.org/pypi/flightradar-client)
 
 This library provides convenient access to a local [Flightradar24](https://www.flightradar24.com/) feed.
 
