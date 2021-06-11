@@ -13,8 +13,14 @@ _LOGGER = logging.getLogger(__name__)
 class FeedManagerBase:
     """Generic Feed manager."""
 
-    def __init__(self, feed, generate_callback, update_callback,
-                 remove_callback, persistent_timestamp=False):
+    def __init__(
+        self,
+        feed,
+        generate_callback,
+        update_callback,
+        remove_callback,
+        persistent_timestamp=False,
+    ):
         """Initialise feed manager."""
         self._feed = feed
         self.feed_entries = {}
@@ -26,8 +32,7 @@ class FeedManagerBase:
 
     def __repr__(self):
         """Return string representation of this feed."""
-        return '<{}(feed={})>'.format(
-            self.__class__.__name__, self._feed)
+        return "<{}(feed={})>".format(self.__class__.__name__, self._feed)
 
     async def update(self, event):
         """Update the feed and then update connected entities."""
@@ -39,17 +44,21 @@ class FeedManagerBase:
             # For entity management the external ids from the feed are used.
             feed_external_ids = set(self.feed_entries)
             remove_external_ids = self._managed_external_ids.difference(
-                feed_external_ids)
+                feed_external_ids
+            )
             await self._remove_entities(remove_external_ids)
             update_external_ids = self._managed_external_ids.intersection(
-                feed_external_ids)
+                feed_external_ids
+            )
             await self._update_entities(update_external_ids)
             create_external_ids = feed_external_ids.difference(
-                self._managed_external_ids)
+                self._managed_external_ids
+            )
             await self._generate_new_entities(create_external_ids)
         else:
             _LOGGER.warning(
-                "Update not successful, no data received from %s", self._feed)
+                "Update not successful, no data received from %s", self._feed
+            )
             # Remove all entities.
             await self._remove_entities(self._managed_external_ids.copy())
             # Remove all feed entries and managed external ids.

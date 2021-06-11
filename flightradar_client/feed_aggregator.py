@@ -2,8 +2,14 @@
 import collections
 import logging
 
-from .consts import (ATTR_CALLSIGN, ATTR_LATITUDE, ATTR_LONGITUDE,
-                     INVALID_COORDINATES, NONE_COORDINATES, UPDATE_OK)
+from .consts import (
+    ATTR_CALLSIGN,
+    ATTR_LATITUDE,
+    ATTR_LONGITUDE,
+    INVALID_COORDINATES,
+    NONE_COORDINATES,
+    UPDATE_OK,
+)
 from .statistics import Statistics
 from .utils import FixedSizeDict
 
@@ -20,16 +26,16 @@ class FeedAggregator:
     def __init__(self, filter_radius=None):
         """Initialise feed aggregator."""
         self._filter_radius = filter_radius
-        self._stack = collections.deque(DEFAULT_AGGREGATOR_STACK_SIZE * [[]],
-                                        DEFAULT_AGGREGATOR_STACK_SIZE)
+        self._stack = collections.deque(
+            DEFAULT_AGGREGATOR_STACK_SIZE * [[]], DEFAULT_AGGREGATOR_STACK_SIZE
+        )
         self._callsigns = FixedSizeDict(max=DEFAULT_CALLSIGNS_CACHE_SIZE)
         self._coordinates = FixedSizeDict(max=DEFAULT_COORDINATES_CACHE_SIZE)
         self._statistics = Statistics()
 
     def __repr__(self):
         """Return string representation of this feed aggregator."""
-        return '<{}(feed={})>'.format(
-            self.__class__.__name__, self.feed)
+        return "<{}(feed={})>".format(self.__class__.__name__, self.feed)
 
     @property
     def feed(self):
@@ -54,8 +60,7 @@ class FeedAggregator:
             await self._insert_statistics_data(filtered_entries)
             # filtered_entries = self._insert_statistics_data(filtered_entries)
             # Rebuild the entries and use external id as key.
-            result_entries = {entry.external_id: entry
-                              for entry in filtered_entries}
+            result_entries = {entry.external_id: entry for entry in filtered_entries}
             return status, result_entries
         # Update statistics
         await self._statistics.retrieval_unsuccessful()
@@ -74,19 +79,20 @@ class FeedAggregator:
             # coordinates, despite the fact that they are valid.
             # Typically, coordinates (0, 0) indicate that the correct
             # coordinates have not been received.
-            if data[key].coordinates \
-                    and data[key].coordinates != INVALID_COORDINATES \
-                    and data[key].coordinates != NONE_COORDINATES:
+            if (
+                data[key].coordinates
+                and data[key].coordinates != INVALID_COORDINATES
+                and data[key].coordinates != NONE_COORDINATES
+            ):
                 self._coordinates[key] = data[key].coordinates
             # Fill in missing coordinates.
-            if (not data[key].coordinates
+            if (
+                not data[key].coordinates
                 or data[key].coordinates == INVALID_COORDINATES
-                or data[key].coordinates == NONE_COORDINATES) \
-                    and key in self._coordinates:
-                data[key].override(ATTR_LATITUDE,
-                                   self._coordinates[key][0])
-                data[key].override(ATTR_LONGITUDE,
-                                   self._coordinates[key][1])
+                or data[key].coordinates == NONE_COORDINATES
+            ) and key in self._coordinates:
+                data[key].override(ATTR_LATITUDE, self._coordinates[key][0])
+                data[key].override(ATTR_LONGITUDE, self._coordinates[key][1])
         _LOGGER.debug("Callsigns = %s", self._callsigns)
         _LOGGER.debug("Coordinates = %s", self._coordinates)
 
@@ -95,22 +101,25 @@ class FeedAggregator:
         filtered_entries = entries
         # Always remove entries without coordinates.
         filtered_entries = list(
-            filter(lambda entry:
-                   (entry.coordinates is not None) and
-                   (entry.coordinates != INVALID_COORDINATES) and
-                   (entry.coordinates != NONE_COORDINATES),
-                   filtered_entries))
+            filter(
+                lambda entry: (entry.coordinates is not None)
+                and (entry.coordinates != INVALID_COORDINATES)
+                and (entry.coordinates != NONE_COORDINATES),
+                filtered_entries,
+            )
+        )
         # Always remove entries on the ground (altitude: 0).
         filtered_entries = list(
-            filter(lambda entry:
-                   entry.altitude > 0,
-                   filtered_entries))
+            filter(lambda entry: entry.altitude > 0, filtered_entries)
+        )
         # Filter by distance.
         if self._filter_radius:
             filtered_entries = list(
-                filter(lambda entry:
-                       entry.distance_to_home <= self._filter_radius,
-                       filtered_entries))
+                filter(
+                    lambda entry: entry.distance_to_home <= self._filter_radius,
+                    filtered_entries,
+                )
+            )
         return filtered_entries
 
     async def _insert_statistics_data(self, entries):
