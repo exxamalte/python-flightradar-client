@@ -5,9 +5,18 @@ from typing import Optional
 
 from haversine import haversine
 
-from .consts import (ATTR_ALTITUDE, ATTR_CALLSIGN, ATTR_LATITUDE,
-                     ATTR_LONGITUDE, ATTR_MODE_S, ATTR_SPEED, ATTR_SQUAWK,
-                     ATTR_TRACK, ATTR_UPDATED, ATTR_VERT_RATE)
+from .consts import (
+    ATTR_ALTITUDE,
+    ATTR_CALLSIGN,
+    ATTR_LATITUDE,
+    ATTR_LONGITUDE,
+    ATTR_MODE_S,
+    ATTR_SPEED,
+    ATTR_SQUAWK,
+    ATTR_TRACK,
+    ATTR_UPDATED,
+    ATTR_VERT_RATE,
+)
 from .statistics import StatisticsData
 
 _LOGGER = logging.getLogger(__name__)
@@ -24,7 +33,7 @@ class FeedEntry:
 
     def __repr__(self):
         """Return string representation of this entry."""
-        return '<{}(id={})>'.format(self.__class__.__name__, self.external_id)
+        return "<{}(id={})>".format(self.__class__.__name__, self.external_id)
 
     def override(self, key, value):
         """Override value in original data."""
@@ -35,8 +44,7 @@ class FeedEntry:
     def coordinates(self):
         """Return the coordinates of this entry."""
         if self._data:
-            coordinates = (self._data[ATTR_LATITUDE], self._data[
-                ATTR_LONGITUDE])
+            coordinates = (self._data[ATTR_LATITUDE], self._data[ATTR_LONGITUDE])
             return coordinates
         return None
 
@@ -57,7 +65,7 @@ class FeedEntry:
         """Return the altitude of this entry."""
         if self._data:
             altitude = self._data[ATTR_ALTITUDE]
-            if altitude == 'ground':
+            if altitude == "ground":
                 altitude = 0
             return altitude
         return None
@@ -108,7 +116,8 @@ class FeedEntry:
             if updated:
                 # Parse the date. Timestamp in microseconds from unix epoch.
                 return datetime.datetime.fromtimestamp(
-                    updated, tz=datetime.timezone.utc)
+                    updated, tz=datetime.timezone.utc
+                )
         return None
 
     @property

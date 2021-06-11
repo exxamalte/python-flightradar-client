@@ -14,9 +14,17 @@ _LOGGER = logging.getLogger(__name__)
 class Feed:
     """Data format independent feed."""
 
-    def __init__(self, home_coordinates, session, loop=None,
-                 apply_filters=True, filter_radius=None, url=None,
-                 hostname=None, port=None):
+    def __init__(
+        self,
+        home_coordinates,
+        session,
+        loop=None,
+        apply_filters=True,
+        filter_radius=None,
+        url=None,
+        hostname=None,
+        port=None,
+    ):
         """Initialise feed."""
         self._home_coordinates = home_coordinates
         self._apply_filters = apply_filters
@@ -32,9 +40,12 @@ class Feed:
 
     def __repr__(self):
         """Return string representation of this feed."""
-        return '<{}(home={}, url={}, radius={})>'.format(
-            self.__class__.__name__, self._home_coordinates, self._url,
-            self._filter_radius)
+        return "<{}(home={}, url={}, radius={})>".format(
+            self.__class__.__name__,
+            self._home_coordinates,
+            self._url,
+            self._filter_radius,
+        )
 
     def _create_url(self, hostname, port):
         """Generate the url to retrieve data from."""
@@ -57,12 +68,12 @@ class Feed:
                 # Extract data from feed entries.
                 for entry in data:
                     # Generate proper data objects.
-                    feed_entries.append(self._new_entry(
-                        self._home_coordinates, entry))
+                    feed_entries.append(self._new_entry(self._home_coordinates, entry))
                 filtered_entries = self._filter_entries(feed_entries)
                 # Rebuild the entries and use external id as key.
-                result_entries = {entry.external_id: entry
-                                  for entry in filtered_entries}
+                result_entries = {
+                    entry.external_id: entry for entry in filtered_entries
+                }
                 return UPDATE_OK, result_entries
             else:
                 # Should not happen.
@@ -82,12 +93,14 @@ class Feed:
                 entries = self._parse(data)
                 return UPDATE_OK, entries
         except aiohttp.ClientError as client_error:
-            _LOGGER.warning("Fetching data from %s failed with %s",
-                            self._url, client_error)
+            _LOGGER.warning(
+                "Fetching data from %s failed with %s", self._url, client_error
+            )
             return UPDATE_ERROR, None
         except asyncio.TimeoutError as timeout_error:
-            _LOGGER.warning("Fetching data from %s failed with %s",
-                            self._url, timeout_error)
+            _LOGGER.warning(
+                "Fetching data from %s failed with %s", self._url, timeout_error
+            )
             return UPDATE_ERROR, None
 
     def _filter_entries(self, entries):
@@ -96,19 +109,22 @@ class Feed:
         if self._apply_filters:
             # Always remove entries without coordinates.
             filtered_entries = list(
-                filter(lambda entry:
-                       (entry.coordinates is not None) and
-                       (entry.coordinates != (None, None)),
-                       filtered_entries))
+                filter(
+                    lambda entry: (entry.coordinates is not None)
+                    and (entry.coordinates != (None, None)),
+                    filtered_entries,
+                )
+            )
             # Always remove entries on the ground (altitude: 0).
             filtered_entries = list(
-                filter(lambda entry:
-                       entry.altitude > 0,
-                       filtered_entries))
+                filter(lambda entry: entry.altitude > 0, filtered_entries)
+            )
             # Filter by distance.
             if self._filter_radius:
                 filtered_entries = list(
-                    filter(lambda entry:
-                           entry.distance_to_home <= self._filter_radius,
-                           filtered_entries))
+                    filter(
+                        lambda entry: entry.distance_to_home <= self._filter_radius,
+                        filtered_entries,
+                    )
+                )
         return filtered_entries

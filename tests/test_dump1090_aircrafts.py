@@ -7,8 +7,10 @@ import asynctest
 from aioresponses import aioresponses
 from flightradar_client.consts import UPDATE_ERROR, UPDATE_OK
 from flightradar_client.dump1090_aircrafts import (
-    Dump1090AircraftsFeed, Dump1090AircraftsFeedAggregator,
-    Dump1090AircraftsFeedManager)
+    Dump1090AircraftsFeed,
+    Dump1090AircraftsFeedAggregator,
+    Dump1090AircraftsFeedManager,
+)
 from flightradar_client.feed_entry import FeedEntry
 
 from tests.utils import load_fixture
@@ -21,31 +23,35 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
     async def test_update_ok(self, mock_aioresponse):
         """Test updating feed is ok."""
         home_coordinates = (-31.0, 151.0)
-        mock_aioresponse.get('http://localhost:8888/data/aircraft.json',
-                             status=200,
-                             body=load_fixture('dump1090-aircrafts-1.json'))
+        mock_aioresponse.get(
+            "http://localhost:8888/data/aircraft.json",
+            status=200,
+            body=load_fixture("dump1090-aircrafts-1.json"),
+        )
 
         async with aiohttp.ClientSession() as session:
             feed = Dump1090AircraftsFeed(home_coordinates, session)
-            assert repr(feed) == "<Dump1090AircraftsFeed(" \
-                                 "home=(-31.0, 151.0), " \
-                                 "url=http://localhost:8888/data/" \
-                                 "aircraft.json, " \
-                                 "radius=None)>"
+            assert (
+                repr(feed) == "<Dump1090AircraftsFeed("
+                "home=(-31.0, 151.0), "
+                "url=http://localhost:8888/data/"
+                "aircraft.json, "
+                "radius=None)>"
+            )
             status, entries = await feed.update()
             assert status == UPDATE_OK
             self.assertIsNotNone(entries)
             assert len(entries) == 4
 
-            feed_entry = entries['7c6d9a']
+            feed_entry = entries["7c6d9a"]
             assert feed_entry.external_id == "7c6d9a"
             assert feed_entry.coordinates == (-34.234888, 150.533009)
             self.assertAlmostEqual(feed_entry.distance_to_home, 362.4, 1)
             assert feed_entry.altitude == 13075
             assert feed_entry.callsign == "QLK231D"
-            assert feed_entry.updated \
-                == datetime.datetime(2018, 10, 26, 7, 35, 51, 400000,
-                                     tzinfo=datetime.timezone.utc)
+            assert feed_entry.updated == datetime.datetime(
+                2018, 10, 26, 7, 35, 51, 400000, tzinfo=datetime.timezone.utc
+            )
             assert feed_entry.speed == 357
             assert feed_entry.track == 61
             assert feed_entry.squawk == "7201"
@@ -57,18 +63,21 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
     async def test_update_ok_filter_radius(self, mock_aioresponse):
         """Test updating feed is ok with filter radius."""
         home_coordinates = (-31.0, 151.0)
-        mock_aioresponse.get('http://localhost:8888/data/aircraft.json',
-                             status=200,
-                             body=load_fixture('dump1090-aircrafts-1.json'))
+        mock_aioresponse.get(
+            "http://localhost:8888/data/aircraft.json",
+            status=200,
+            body=load_fixture("dump1090-aircrafts-1.json"),
+        )
 
         async with aiohttp.ClientSession() as session:
-            feed = Dump1090AircraftsFeed(home_coordinates, session,
-                                         filter_radius=300)
-            assert repr(feed) == "<Dump1090AircraftsFeed(" \
-                                 "home=(-31.0, 151.0), " \
-                                 "url=http://localhost:8888/data/" \
-                                 "aircraft.json, " \
-                                 "radius=300)>"
+            feed = Dump1090AircraftsFeed(home_coordinates, session, filter_radius=300)
+            assert (
+                repr(feed) == "<Dump1090AircraftsFeed("
+                "home=(-31.0, 151.0), "
+                "url=http://localhost:8888/data/"
+                "aircraft.json, "
+                "radius=300)>"
+            )
             status, entries = await feed.update()
             assert status == UPDATE_OK
             self.assertIsNotNone(entries)
@@ -78,8 +87,9 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
     async def test_update_error(self, mock_aioresponse):
         """Test updating feed results in error."""
         home_coordinates = (-31.0, 151.0)
-        mock_aioresponse.get('http://localhost:8888/data/aircraft.json',
-                             status=500, body='ERROR')
+        mock_aioresponse.get(
+            "http://localhost:8888/data/aircraft.json", status=500, body="ERROR"
+        )
 
         async with aiohttp.ClientSession() as session:
             feed = Dump1090AircraftsFeed(home_coordinates, session)
@@ -91,8 +101,9 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
     async def test_update_with_client_error(self, mock_aioresponse):
         """Test updating feed raises exception."""
         home_coordinates = (-31.0, 151.0)
-        mock_aioresponse.get('http://localhost:8888/data/aircraft.json',
-                             exception=aiohttp.ClientError())
+        mock_aioresponse.get(
+            "http://localhost:8888/data/aircraft.json", exception=aiohttp.ClientError()
+        )
 
         async with aiohttp.ClientSession() as session:
             feed = Dump1090AircraftsFeed(home_coordinates, session)
@@ -104,8 +115,9 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
     async def test_update_with_timeout_error(self, mock_aioresponse):
         """Test updating feed raises exception."""
         home_coordinates = (-31.0, 151.0)
-        mock_aioresponse.get('http://localhost:8888/data/aircraft.json',
-                             exception=asyncio.TimeoutError())
+        mock_aioresponse.get(
+            "http://localhost:8888/data/aircraft.json", exception=asyncio.TimeoutError()
+        )
 
         async with aiohttp.ClientSession() as session:
             feed = Dump1090AircraftsFeed(home_coordinates, session)
@@ -119,27 +131,29 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
         home_coordinates = (-31.0, 151.0)
 
         async with aiohttp.ClientSession() as session:
-            feed_aggregator = Dump1090AircraftsFeedAggregator(
-                home_coordinates, session)
-            assert repr(feed_aggregator) == "<Dump1090AircraftsFeed" \
-                                            "Aggregator" \
-                                            "(feed=<Dump1090AircraftsFeed(" \
-                                            "home=(-31.0, 151.0), " \
-                                            "url=http://localhost:8888/" \
-                                            "data/aircraft.json, " \
-                                            "radius=None)>)>"
+            feed_aggregator = Dump1090AircraftsFeedAggregator(home_coordinates, session)
+            assert (
+                repr(feed_aggregator) == "<Dump1090AircraftsFeed"
+                "Aggregator"
+                "(feed=<Dump1090AircraftsFeed("
+                "home=(-31.0, 151.0), "
+                "url=http://localhost:8888/"
+                "data/aircraft.json, "
+                "radius=None)>)>"
+            )
 
             # Update 1
             mock_aioresponse.get(
-                'http://localhost:8888/data/aircraft.json',
+                "http://localhost:8888/data/aircraft.json",
                 status=200,
-                body=load_fixture('dump1090-aircrafts-1.json'))
+                body=load_fixture("dump1090-aircrafts-1.json"),
+            )
             status, entries = await feed_aggregator.update()
             assert status == UPDATE_OK
             self.assertIsNotNone(entries)
             assert len(entries) == 4
 
-            feed_entry = entries['7c6b28']
+            feed_entry = entries["7c6b28"]
             assert feed_entry.external_id == "7c6b28"
             assert feed_entry.coordinates == (-32.819840, 151.124735)
             assert feed_entry.altitude == 26000
@@ -149,15 +163,16 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
 
             # Update 2
             mock_aioresponse.get(
-                'http://localhost:8888/data/aircraft.json',
+                "http://localhost:8888/data/aircraft.json",
                 status=200,
-                body=load_fixture('dump1090-aircrafts-2.json'))
+                body=load_fixture("dump1090-aircrafts-2.json"),
+            )
             status, entries = await feed_aggregator.update()
             assert status == UPDATE_OK
             self.assertIsNotNone(entries)
             assert len(entries) == 5
 
-            feed_entry = entries['7c6b28']
+            feed_entry = entries["7c6b28"]
             assert feed_entry.external_id == "7c6b28"
             assert feed_entry.coordinates == (-32.819840, 151.124735)
             assert feed_entry.altitude == 26000
@@ -167,20 +182,25 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
     async def test_feed_aggregator_filter_radius(self, mock_aioresponse):
         """Test updating feed is ok with filter radius."""
         home_coordinates = (-31.0, 151.0)
-        mock_aioresponse.get('http://localhost:8888/data/aircraft.json',
-                             status=200,
-                             body=load_fixture('dump1090-aircrafts-1.json'))
+        mock_aioresponse.get(
+            "http://localhost:8888/data/aircraft.json",
+            status=200,
+            body=load_fixture("dump1090-aircrafts-1.json"),
+        )
 
         async with aiohttp.ClientSession() as session:
             feed_aggregator = Dump1090AircraftsFeedAggregator(
-                home_coordinates, session, filter_radius=300)
-            assert repr(feed_aggregator) == "<Dump1090AircraftsFeed" \
-                                            "Aggregator" \
-                                            "(feed=<Dump1090AircraftsFeed(" \
-                                            "home=(-31.0, 151.0), " \
-                                            "url=http://localhost:8888/" \
-                                            "data/aircraft.json, " \
-                                            "radius=300)>)>"
+                home_coordinates, session, filter_radius=300
+            )
+            assert (
+                repr(feed_aggregator) == "<Dump1090AircraftsFeed"
+                "Aggregator"
+                "(feed=<Dump1090AircraftsFeed("
+                "home=(-31.0, 151.0), "
+                "url=http://localhost:8888/"
+                "data/aircraft.json, "
+                "radius=300)>)>"
+            )
 
             status, entries = await feed_aggregator.update()
             assert status == UPDATE_OK
@@ -191,9 +211,11 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
     async def test_feed_manager(self, mock_aioresponse):
         """Test the feed manager."""
         home_coordinates = (-31.0, 151.0)
-        mock_aioresponse.get('http://localhost:8888/data/aircraft.json',
-                             status=200,
-                             body=load_fixture('dump1090-aircrafts-1.json'))
+        mock_aioresponse.get(
+            "http://localhost:8888/data/aircraft.json",
+            status=200,
+            body=load_fixture("dump1090-aircrafts-1.json"),
+        )
 
         # This will just record calls and keep track of external ids.
         generated_entity_external_ids = []
@@ -213,19 +235,23 @@ class TestDump1090AircraftsFeed(asynctest.TestCase):
             removed_entity_external_ids.append(external_id)
 
         async with aiohttp.ClientSession() as session:
-            feed_manager = Dump1090AircraftsFeedManager(_generate_entity,
-                                                        _update_entity,
-                                                        _remove_entity,
-                                                        home_coordinates,
-                                                        session)
-            assert repr(feed_manager) == "<Dump1090AircraftsFeedManager(" \
-                                         "feed=" \
-                                         "<Dump1090AircraftsFeedAggregator" \
-                                         "(feed=<Dump1090AircraftsFeed(" \
-                                         "home=(-31.0, 151.0), " \
-                                         "url=http://localhost:8888/" \
-                                         "data/aircraft.json, " \
-                                         "radius=None)>)>)>"
+            feed_manager = Dump1090AircraftsFeedManager(
+                _generate_entity,
+                _update_entity,
+                _remove_entity,
+                home_coordinates,
+                session,
+            )
+            assert (
+                repr(feed_manager) == "<Dump1090AircraftsFeedManager("
+                "feed="
+                "<Dump1090AircraftsFeedAggregator"
+                "(feed=<Dump1090AircraftsFeed("
+                "home=(-31.0, 151.0), "
+                "url=http://localhost:8888/"
+                "data/aircraft.json, "
+                "radius=None)>)>)>"
+            )
             await feed_manager.update(None)
             entries = feed_manager.feed_entries
             self.assertIsNotNone(entries)

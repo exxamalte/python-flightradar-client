@@ -13,7 +13,7 @@ class Statistics:
 
     def __repr__(self):
         """Return string representation of the statistics."""
-        return '<Statistics[{}]>'.format(self._entries)
+        return "<Statistics[{}]>".format(self._entries)
 
     def get(self, key):
         """Get entry for provided key."""
@@ -51,7 +51,7 @@ class StatisticsData:
 
     def __repr__(self):
         """Return string representation of the statistics."""
-        return '<StatisticsData({:.1%})>'.format(self.success_ratio())
+        return "<StatisticsData({:.1%})>".format(self.success_ratio())
 
     def retrieval_successful(self):
         """Record a successful update."""

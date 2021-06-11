@@ -8,11 +8,7 @@ AUTHOR_EMAIL = "coding@subspace.de"
 DESCRIPTION = "Flightradar client library."
 URL = "https://github.com/exxamalte/python-flightradar-client"
 
-REQUIRES = [
-    'haversine>=1.0.1',
-    'aiohttp>=3.7.4,<4',
-    'async_timeout'
-]
+REQUIRES = ["haversine>=1.0.1", "aiohttp>=3.7.4,<4", "async_timeout"]
 
 
 with open("README.md", "r") as fh:
@@ -41,5 +37,5 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
     ],
-    install_requires=REQUIRES
+    install_requires=REQUIRES,
 )
