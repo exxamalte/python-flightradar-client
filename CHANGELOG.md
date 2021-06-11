@@ -1,5 +1,11 @@
 # Changes
 
+## 0.7 (11/06/2021)
+* Set aiohttp to a release 3.7.4 or later (thanks @fabaff).
+* Add license tag.
+* Added Python 3.9 support.
+* General code improvements.
+
 ## 0.6 (22/10/2020)
 * Added basic statistics to feed aggregator.
 * Exclude tests from package.
