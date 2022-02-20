@@ -5,6 +5,8 @@ Fetches JSON feed from a local Dump1090 aircrafts feed.
 """
 import logging
 
+from aiohttp import ClientSession
+
 from .consts import (
     ATTR_ALTITUDE,
     ATTR_CALLSIGN,
@@ -43,7 +45,7 @@ class Dump1090AircraftsFeedManager(FeedManagerBase):
         update_callback,
         remove_callback,
         coordinates,
-        session,
+        websession: ClientSession,
         loop=None,
         filter_radius=None,
         url=None,
@@ -53,7 +55,7 @@ class Dump1090AircraftsFeedManager(FeedManagerBase):
         """Initialize the NSW Rural Fire Services Feed Manager."""
         feed = Dump1090AircraftsFeedAggregator(
             coordinates,
-            session,
+            websession,
             loop=loop,
             filter_radius=filter_radius,
             url=url,
@@ -69,7 +71,7 @@ class Dump1090AircraftsFeedAggregator(FeedAggregator):
     def __init__(
         self,
         home_coordinates,
-        session,
+        websession: ClientSession,
         loop=None,
         filter_radius=None,
         url=None,
@@ -79,7 +81,14 @@ class Dump1090AircraftsFeedAggregator(FeedAggregator):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
         self._feed = Dump1090AircraftsFeed(
-            home_coordinates, session, loop, False, filter_radius, url, hostname, port
+            home_coordinates,
+            websession,
+            loop,
+            False,
+            filter_radius,
+            url,
+            hostname,
+            port,
         )
 
     @property

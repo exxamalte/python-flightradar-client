@@ -3,7 +3,7 @@ import asyncio
 import logging
 
 import aiohttp
-import async_timeout
+from aiohttp import ClientSession, client_exceptions
 
 from .consts import UPDATE_ERROR, UPDATE_OK
 from .exceptions import FlightradarException
@@ -17,7 +17,7 @@ class Feed:
     def __init__(
         self,
         home_coordinates,
-        session,
+        websession: ClientSession,
         loop=None,
         apply_filters=True,
         filter_radius=None,
@@ -29,9 +29,9 @@ class Feed:
         self._home_coordinates = home_coordinates
         self._apply_filters = apply_filters
         self._filter_radius = filter_radius
-        if session is None:
+        if websession is None:
             raise FlightradarException("Session must not be None")
-        self._session = session
+        self._websession = websession
         self._loop = loop
         if url:
             self._url = url
@@ -85,13 +85,22 @@ class Feed:
     async def _fetch(self):
         """Fetch JSON data from external source."""
         try:
-            async with async_timeout.timeout(10, loop=self._loop):
-                response = await self._session.get(self._url)
-                # Raise error if status >= 400.
-                response.raise_for_status()
-                data = await response.json()
-                entries = self._parse(data)
-                return UPDATE_OK, entries
+            timeout = aiohttp.ClientTimeout(total=10)
+            async with self._websession.request(
+                "GET", self._url, timeout=timeout
+            ) as response:
+                try:
+                    # Raise error if status >= 400.
+                    response.raise_for_status()
+                    data = await response.json()
+
+                    entries = self._parse(data)
+                    return UPDATE_OK, entries
+                except client_exceptions.ClientError as client_error:
+                    _LOGGER.warning(
+                        "Fetching data from %s failed with %s", self._url, client_error
+                    )
+                    return UPDATE_ERROR, None
         except aiohttp.ClientError as client_error:
             _LOGGER.warning(
                 "Fetching data from %s failed with %s", self._url, client_error

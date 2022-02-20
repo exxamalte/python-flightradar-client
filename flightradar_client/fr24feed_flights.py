@@ -5,6 +5,8 @@ Fetches JSON feed from a local Flightradar flights feed.
 """
 import logging
 
+from aiohttp import ClientSession
+
 from .consts import (
     ATTR_ALTITUDE,
     ATTR_CALLSIGN,
@@ -39,7 +41,7 @@ class FlightradarFlightsFeedManager(FeedManagerBase):
         update_callback,
         remove_callback,
         coordinates,
-        session,
+        websession: ClientSession,
         loop=None,
         filter_radius=None,
         url=None,
@@ -49,7 +51,7 @@ class FlightradarFlightsFeedManager(FeedManagerBase):
         """Initialize the NSW Rural Fire Services Feed Manager."""
         feed = FlightradarFlightsFeedAggregator(
             coordinates,
-            session,
+            websession,
             loop=loop,
             filter_radius=filter_radius,
             url=url,
@@ -65,7 +67,7 @@ class FlightradarFlightsFeedAggregator(FeedAggregator):
     def __init__(
         self,
         home_coordinates,
-        session,
+        websession: ClientSession,
         loop=None,
         filter_radius=None,
         url=None,
@@ -75,7 +77,14 @@ class FlightradarFlightsFeedAggregator(FeedAggregator):
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
         self._feed = FlightradarFlightsFeed(
-            home_coordinates, session, loop, False, filter_radius, url, hostname, port
+            home_coordinates,
+            websession,
+            loop,
+            False,
+            filter_radius,
+            url,
+            hostname,
+            port,
         )
 
     @property
@@ -90,7 +99,7 @@ class FlightradarFlightsFeed(Feed):
     def __init__(
         self,
         home_coordinates,
-        session,
+        websession: ClientSession,
         loop=None,
         apply_filters=True,
         filter_radius=None,
@@ -100,7 +109,7 @@ class FlightradarFlightsFeed(Feed):
     ):
         super().__init__(
             home_coordinates,
-            session,
+            websession,
             loop,
             apply_filters,
             filter_radius,
