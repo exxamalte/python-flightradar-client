@@ -47,7 +47,6 @@ class Dump1090AircraftsFeedManager(FeedManagerBase):
         remove_callback: Callable[[str], Awaitable[None]],
         coordinates: Tuple[float, float],
         websession: ClientSession,
-        loop=None,
         filter_radius: float = None,
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
@@ -57,7 +56,6 @@ class Dump1090AircraftsFeedManager(FeedManagerBase):
         feed = Dump1090AircraftsFeedAggregator(
             coordinates,
             websession,
-            loop=loop,
             filter_radius=filter_radius,
             url=url,
             hostname=hostname,
@@ -73,7 +71,6 @@ class Dump1090AircraftsFeedAggregator(FeedAggregator):
         self,
         home_coordinates: Tuple[float, float],
         websession: ClientSession,
-        loop=None,
         filter_radius: float = None,
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
@@ -84,7 +81,6 @@ class Dump1090AircraftsFeedAggregator(FeedAggregator):
         self._feed = Dump1090AircraftsFeed(
             home_coordinates,
             websession,
-            loop,
             False,
             filter_radius,
             url,
@@ -105,7 +101,6 @@ class Dump1090AircraftsFeed(Feed):
         self,
         home_coordinates: Tuple[float, float],
         websession: ClientSession,
-        loop=None,
         apply_filters: bool = True,
         filter_radius: float = None,
         url: str = None,
@@ -115,7 +110,6 @@ class Dump1090AircraftsFeed(Feed):
         super().__init__(
             home_coordinates,
             websession,
-            loop,
             apply_filters,
             filter_radius,
             url,

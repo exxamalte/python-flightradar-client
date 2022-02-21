@@ -20,7 +20,6 @@ class Feed:
         self,
         home_coordinates: Tuple[float, float],
         websession: ClientSession,
-        loop=None,
         apply_filters=True,
         filter_radius=None,
         url=None,
@@ -34,7 +33,6 @@ class Feed:
         if websession is None:
             raise FlightradarException("Session must not be None")
         self._websession = websession
-        self._loop = loop
         if url:
             self._url = url
         else:

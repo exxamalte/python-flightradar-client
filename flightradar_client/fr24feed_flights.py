@@ -43,7 +43,6 @@ class FlightradarFlightsFeedManager(FeedManagerBase):
         remove_callback: Callable[[str], Awaitable[None]],
         coordinates: Tuple[float, float],
         websession: ClientSession,
-        loop=None,
         filter_radius: float = None,
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
@@ -53,7 +52,6 @@ class FlightradarFlightsFeedManager(FeedManagerBase):
         feed = FlightradarFlightsFeedAggregator(
             coordinates,
             websession,
-            loop=loop,
             filter_radius=filter_radius,
             url=url,
             hostname=hostname,
@@ -69,7 +67,6 @@ class FlightradarFlightsFeedAggregator(FeedAggregator):
         self,
         home_coordinates: Tuple[float, float],
         websession: ClientSession,
-        loop=None,
         filter_radius: float = None,
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
@@ -80,7 +77,6 @@ class FlightradarFlightsFeedAggregator(FeedAggregator):
         self._feed = FlightradarFlightsFeed(
             home_coordinates,
             websession,
-            loop,
             False,
             filter_radius,
             url,
@@ -101,7 +97,6 @@ class FlightradarFlightsFeed(Feed):
         self,
         home_coordinates: Tuple[float, float],
         websession: ClientSession,
-        loop=None,
         apply_filters: bool = True,
         filter_radius: float = None,
         url: str = None,
@@ -111,7 +106,6 @@ class FlightradarFlightsFeed(Feed):
         super().__init__(
             home_coordinates,
             websession,
-            loop,
             apply_filters,
             filter_radius,
             url,
