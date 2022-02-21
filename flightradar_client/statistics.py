@@ -44,7 +44,7 @@ class Statistics:
 class StatisticsData:
     """Statistics data for a single feed entry."""
 
-    def __init__(self, retrieval_successful):
+    def __init__(self, retrieval_successful: bool):
         """Initialise statistics entry."""
         self._retrievals = 1 if retrieval_successful else 0
         self._total = 1
@@ -62,7 +62,7 @@ class StatisticsData:
         """Record an unsuccessful update."""
         self._total = self._total + 1
 
-    def success_ratio(self):
+    def success_ratio(self) -> float:
         """Calculate success ratio."""
         if self._total == 0:
             return 0

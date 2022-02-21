@@ -1,7 +1,7 @@
 """Feed Entry."""
 import datetime
 import logging
-from typing import Optional
+from typing import Dict, Optional, Tuple
 
 from haversine import haversine
 
@@ -25,7 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 class FeedEntry:
     """Feed entry class."""
 
-    def __init__(self, home_coordinates, data):
+    def __init__(self, home_coordinates: Tuple[float, float], data: Dict):
         """Initialise this feed entry."""
         self._home_coordinates = home_coordinates
         self._data = data
@@ -41,7 +41,7 @@ class FeedEntry:
             self._data[key] = value
 
     @property
-    def coordinates(self):
+    def coordinates(self) -> Optional[Tuple[float, float]]:
         """Return the coordinates of this entry."""
         if self._data:
             coordinates = (self._data[ATTR_LATITUDE], self._data[ATTR_LONGITUDE])
@@ -49,7 +49,7 @@ class FeedEntry:
         return None
 
     @property
-    def distance_to_home(self):
+    def distance_to_home(self) -> float:
         """Return the distance in km of this entry to the home coordinates."""
         return haversine(self._home_coordinates, self.coordinates)
 
@@ -126,6 +126,6 @@ class FeedEntry:
         return self._statistics
 
     @statistics.setter
-    def statistics(self, value):
+    def statistics(self, value: Optional[StatisticsData]):
         """Set statistics value."""
         self._statistics = value
