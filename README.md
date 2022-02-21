@@ -35,6 +35,7 @@ the same parameters:
 | Name               | Type                                                                                                 | Description                                                                                   |
 |--------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | `home_coordinates` | required, tuple of latitude and longitude                                                            | Used to calculate the distance to each aircraft.                                              |
+| `websession`       | required, a `aiohttp.ClientSession()` session for retrieving data
 | `filter_radius`    | optional, float value in kilometres, default: don't filter by distance                               | Only aircrafts within this radius around the home coordinates are included in the result set. |
 | `url`              | optional, full url to access the Pi24 ADS-B receiver JSON, default: construct with hostname and port | Define if you have customised access to Pi24 ADS-B receiver or use HTTPS for example.         |
 | `hostname`         | optional, hostname of the Pi24 ADS-B receiver, default: `localhost`                                  | Define if you are not running this library on your Pi24 ADS-B receiver.                       |
@@ -44,26 +45,32 @@ the same parameters:
 
 ```python
 import asyncio
-import aiohttp
+from aiohttp import ClientSession
 from flightradar_client.fr24feed_flights import FlightradarFlightsFeed
-session = aiohttp.ClientSession()
-# Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed = FlightradarFlightsFeed((-33.5, 151.5), session)
-LOOP = asyncio.get_event_loop()
-status, entries = LOOP.run_until_complete(feed.update())
+async def main() -> None:
+    async with ClientSession() as websession:
+        # Home Coordinates: Latitude: -33.5, Longitude: 151.5
+        feed = FlightradarFlightsFeed((-33.5, 151.5), websession)
+        status, entries = await feed.update()
+        print(status)
+        print(entries)
+asyncio.get_event_loop().run_until_complete(main())
 ```
 
 #### Feed Aggregator
 
 ```python
 import asyncio
-import aiohttp
+from aiohttp import ClientSession
 from flightradar_client.fr24feed_flights import FlightradarFlightsFeedAggregator
-session = aiohttp.ClientSession()
-# Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed_aggregator = FlightradarFlightsFeedAggregator((-33.5, 151.5), session)
-LOOP = asyncio.get_event_loop()
-status, entries = LOOP.run_until_complete(feed_aggregator.update())
+async def main() -> None:
+    async with ClientSession() as websession:
+        # Home Coordinates: Latitude: -33.5, Longitude: 151.5
+        feed = FlightradarFlightsFeedAggregator((-33.5, 151.5), websession)
+        status, entries = await feed.update()
+        print(status)
+        print(entries)
+asyncio.get_event_loop().run_until_complete(main())
 ```
 
 ### Dump1090 Feed
@@ -77,6 +84,7 @@ the same parameters:
 | Name               | Type                                                                                                 | Description                                                                                   |
 |--------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
 | `home_coordinates` | required, tuple of latitude and longitude                                                            | Used to calculate the distance to each aircraft.                                              |
+| `websession`       | required, a `aiohttp.ClientSession()` session for retrieving data
 | `filter_radius`    | optional, float value in kilometres, default: don't filter by distance                               | Only aircrafts within this radius around the home coordinates are included in the result set. |
 | `url`              | optional, full url to access the Pi24 ADS-B receiver JSON, default: construct with hostname and port | Define if you have customised access to Pi24 ADS-B receiver or use HTTPS for example.         |
 | `hostname`         | optional, hostname of the Pi24 ADS-B receiver, default: `localhost`                                  | Define if you are not running this library on your Pi24 ADS-B receiver.                       |
@@ -86,24 +94,30 @@ the same parameters:
 
 ```python
 import asyncio
-import aiohttp
+from aiohttp import ClientSession
 from flightradar_client.dump1090_aircrafts import Dump1090AircraftsFeed
-session = aiohttp.ClientSession()
-# Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed = Dump1090AircraftsFeed((-33.5, 151.5), session)
-LOOP = asyncio.get_event_loop()
-status, entries = LOOP.run_until_complete(feed.update())
+async def main() -> None:
+    async with ClientSession() as websession:
+        # Home Coordinates: Latitude: -33.5, Longitude: 151.5
+        feed = Dump1090AircraftsFeed((-33.5, 151.5), websession)
+        status, entries = await feed.update()
+        print(status)
+        print(entries)
+asyncio.get_event_loop().run_until_complete(main())
 ```
 
 #### Feed Aggregator
 
 ```python
 import asyncio
-import aiohttp
+from aiohttp import ClientSession
 from flightradar_client.dump1090_aircrafts import Dump1090AircraftsFeedAggregator
-session = aiohttp.ClientSession()
-# Home Coordinates: Latitude: -33.5, Longitude: 151.5
-feed_aggregator = Dump1090AircraftsFeedAggregator((-33.5, 151.5), session)
-LOOP = asyncio.get_event_loop()
-status, entries = LOOP.run_until_complete(feed_aggregator.update())
+async def main() -> None:
+    async with ClientSession() as websession:
+        # Home Coordinates: Latitude: -33.5, Longitude: 151.5
+        feed = Dump1090AircraftsFeedAggregator((-33.5, 151.5), websession)
+        status, entries = await feed.update()
+        print(status)
+        print(entries)
+asyncio.get_event_loop().run_until_complete(main())
 ```
