@@ -36,7 +36,7 @@ class FeedAggregator:
         self._coordinates = FixedSizeDict(max=DEFAULT_COORDINATES_CACHE_SIZE)
         self._statistics = Statistics()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of this feed aggregator."""
         return "<{}(feed={})>".format(self.__class__.__name__, self.feed)
 

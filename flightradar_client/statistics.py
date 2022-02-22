@@ -13,7 +13,7 @@ class Statistics:
         """Initialise statistics."""
         self._entries = FixedSizeDict(max=DEFAULT_STATISTICS_ENTRY_SIZE)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of the statistics."""
         return "<Statistics[{}]>".format(self._entries)
 
@@ -51,7 +51,7 @@ class StatisticsData:
         self._retrievals = 1 if retrieval_successful else 0
         self._total = 1
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of the statistics."""
         return "<StatisticsData({:.1%})>".format(self.success_ratio())
 

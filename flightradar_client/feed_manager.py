@@ -32,7 +32,7 @@ class FeedManagerBase:
         self._remove_callback = remove_callback
         self._persistent_timestamp = persistent_timestamp
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of this feed."""
         return "<{}(feed={})>".format(self.__class__.__name__, self._feed)
 

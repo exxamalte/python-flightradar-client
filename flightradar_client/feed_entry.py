@@ -31,7 +31,7 @@ class FeedEntry:
         self._data = data
         self._statistics = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of this entry."""
         return "<{}(id={})>".format(self.__class__.__name__, self.external_id)
 

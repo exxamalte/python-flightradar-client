@@ -38,7 +38,7 @@ class Feed:
         else:
             self._url = self._create_url(hostname, port)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of this feed."""
         return "<{}(home={}, url={}, radius={})>".format(
             self.__class__.__name__,
