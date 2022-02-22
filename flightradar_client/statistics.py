@@ -1,4 +1,6 @@
 """Feed statistics."""
+from typing import List
+
 from .utils import FixedSizeDict
 
 DEFAULT_STATISTICS_ENTRY_SIZE = 250
@@ -7,7 +9,7 @@ DEFAULT_STATISTICS_ENTRY_SIZE = 250
 class Statistics:
     """Statistics collector."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialise statistics."""
         self._entries = FixedSizeDict(max=DEFAULT_STATISTICS_ENTRY_SIZE)
 
@@ -21,7 +23,7 @@ class Statistics:
             return self._entries[key]
         return None
 
-    async def retrieval_successful(self, updated_keys):
+    async def retrieval_successful(self, updated_keys: List[str]) -> None:
         """Record a successful retrieval."""
         # 1. Update existing entries.
         for key in self._entries:
@@ -34,7 +36,7 @@ class Statistics:
             if key not in self._entries:
                 self._entries[key] = StatisticsData(True)
 
-    async def retrieval_unsuccessful(self):
+    async def retrieval_unsuccessful(self) -> None:
         """Record an unsuccessful retrieval."""
         for key in self._entries:
             # Always increase counter for total number of retrievals.
@@ -44,7 +46,7 @@ class Statistics:
 class StatisticsData:
     """Statistics data for a single feed entry."""
 
-    def __init__(self, retrieval_successful: bool):
+    def __init__(self, retrieval_successful: bool) -> None:
         """Initialise statistics entry."""
         self._retrievals = 1 if retrieval_successful else 0
         self._total = 1
@@ -53,12 +55,12 @@ class StatisticsData:
         """Return string representation of the statistics."""
         return "<StatisticsData({:.1%})>".format(self.success_ratio())
 
-    def retrieval_successful(self):
+    def retrieval_successful(self) -> None:
         """Record a successful update."""
         self._retrievals = self._retrievals + 1
         self._total = self._total + 1
 
-    def retrieval_unsuccessful(self):
+    def retrieval_unsuccessful(self) -> None:
         """Record an unsuccessful update."""
         self._total = self._total + 1
 

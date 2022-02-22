@@ -51,7 +51,7 @@ class Dump1090AircraftsFeedManager(FeedManagerBase):
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
         port: int = DEFAULT_PORT,
-    ):
+    ) -> None:
         """Initialize the NSW Rural Fire Services Feed Manager."""
         feed = Dump1090AircraftsFeedAggregator(
             coordinates,
@@ -75,7 +75,7 @@ class Dump1090AircraftsFeedAggregator(FeedAggregator):
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
         port: int = DEFAULT_PORT,
-    ):
+    ) -> None:
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
         self._feed = Dump1090AircraftsFeed(
@@ -106,7 +106,7 @@ class Dump1090AircraftsFeed(Feed):
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
         port: int = DEFAULT_PORT,
-    ):
+    ) -> None:
         super().__init__(
             home_coordinates,
             websession,

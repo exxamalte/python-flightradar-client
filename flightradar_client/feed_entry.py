@@ -25,7 +25,7 @@ _LOGGER = logging.getLogger(__name__)
 class FeedEntry:
     """Feed entry class."""
 
-    def __init__(self, home_coordinates: Tuple[float, float], data: Dict):
+    def __init__(self, home_coordinates: Tuple[float, float], data: Dict) -> None:
         """Initialise this feed entry."""
         self._home_coordinates = home_coordinates
         self._data = data
@@ -35,7 +35,7 @@ class FeedEntry:
         """Return string representation of this entry."""
         return "<{}(id={})>".format(self.__class__.__name__, self.external_id)
 
-    def override(self, key, value):
+    def override(self, key, value) -> None:
         """Override value in original data."""
         if self._data:
             self._data[key] = value
@@ -126,6 +126,6 @@ class FeedEntry:
         return self._statistics
 
     @statistics.setter
-    def statistics(self, value: Optional[StatisticsData]):
+    def statistics(self, value: Optional[StatisticsData]) -> None:
         """Set statistics value."""
         self._statistics = value

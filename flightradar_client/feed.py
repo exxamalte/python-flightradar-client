@@ -25,7 +25,7 @@ class Feed:
         url=None,
         hostname=None,
         port=None,
-    ):
+    ) -> None:
         """Initialise feed."""
         self._home_coordinates = home_coordinates
         self._apply_filters = apply_filters

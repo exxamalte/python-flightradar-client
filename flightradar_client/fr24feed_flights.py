@@ -47,7 +47,7 @@ class FlightradarFlightsFeedManager(FeedManagerBase):
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
         port: int = DEFAULT_PORT,
-    ):
+    ) -> None:
         """Initialize the NSW Rural Fire Services Feed Manager."""
         feed = FlightradarFlightsFeedAggregator(
             coordinates,
@@ -71,7 +71,7 @@ class FlightradarFlightsFeedAggregator(FeedAggregator):
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
         port: int = DEFAULT_PORT,
-    ):
+    ) -> None:
         """Initialise feed aggregator."""
         super().__init__(filter_radius)
         self._feed = FlightradarFlightsFeed(
@@ -102,7 +102,7 @@ class FlightradarFlightsFeed(Feed):
         url: str = None,
         hostname: str = DEFAULT_HOSTNAME,
         port: int = DEFAULT_PORT,
-    ):
+    ) -> None:
         super().__init__(
             home_coordinates,
             websession,

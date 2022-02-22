@@ -26,7 +26,7 @@ DEFAULT_COORDINATES_CACHE_SIZE = 250
 class FeedAggregator:
     """Aggregates date received from the feed over a period of time."""
 
-    def __init__(self, filter_radius: float = None):
+    def __init__(self, filter_radius: float = None) -> None:
         """Initialise feed aggregator."""
         self._filter_radius = filter_radius
         self._stack = collections.deque(
@@ -69,7 +69,7 @@ class FeedAggregator:
         await self._statistics.retrieval_unsuccessful()
         return status, None
 
-    async def _update_cache(self, data: [str, FeedEntry]):
+    async def _update_cache(self, data: [str, FeedEntry]) -> None:
         for key in data:
             # Keep record of callsigns.
             if key not in self._callsigns and data[key].callsign:
@@ -125,7 +125,7 @@ class FeedAggregator:
             )
         return filtered_entries
 
-    async def _insert_statistics_data(self, entries: List[FeedEntry]):
+    async def _insert_statistics_data(self, entries: List[FeedEntry]) -> None:
         """Update current statistics data for each entry."""
         if entries:
             for entry in entries:
