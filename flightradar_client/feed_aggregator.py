@@ -1,6 +1,7 @@
 """Feed aggregator base class."""
 import collections
 import logging
+from typing import Dict, List, Optional, Tuple
 
 from .consts import (
     ATTR_CALLSIGN,
@@ -10,6 +11,8 @@ from .consts import (
     NONE_COORDINATES,
     UPDATE_OK,
 )
+from .feed import Feed
+from .feed_entry import FeedEntry
 from .statistics import Statistics
 from .utils import FixedSizeDict
 
@@ -23,7 +26,7 @@ DEFAULT_COORDINATES_CACHE_SIZE = 250
 class FeedAggregator:
     """Aggregates date received from the feed over a period of time."""
 
-    def __init__(self, filter_radius=None):
+    def __init__(self, filter_radius: float = None) -> None:
         """Initialise feed aggregator."""
         self._filter_radius = filter_radius
         self._stack = collections.deque(
@@ -33,16 +36,16 @@ class FeedAggregator:
         self._coordinates = FixedSizeDict(max=DEFAULT_COORDINATES_CACHE_SIZE)
         self._statistics = Statistics()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return string representation of this feed aggregator."""
         return "<{}(feed={})>".format(self.__class__.__name__, self.feed)
 
     @property
-    def feed(self):
+    def feed(self) -> Optional[Feed]:
         """Return the external feed access."""
         return None
 
-    async def update(self):
+    async def update(self) -> Tuple[str, Optional[Dict[str, FeedEntry]]]:
         """Update from external source, aggregate with previous data and
         return filtered entries."""
         status, data = await self.feed.update()
@@ -66,7 +69,7 @@ class FeedAggregator:
         await self._statistics.retrieval_unsuccessful()
         return status, None
 
-    async def _update_cache(self, data):
+    async def _update_cache(self, data: [str, FeedEntry]) -> None:
         for key in data:
             # Keep record of callsigns.
             if key not in self._callsigns and data[key].callsign:
@@ -96,7 +99,7 @@ class FeedAggregator:
         _LOGGER.debug("Callsigns = %s", self._callsigns)
         _LOGGER.debug("Coordinates = %s", self._coordinates)
 
-    async def _filter_entries(self, entries):
+    async def _filter_entries(self, entries: List[FeedEntry]) -> List[FeedEntry]:
         """Filter the provided entries."""
         filtered_entries = entries
         # Always remove entries without coordinates.
@@ -122,7 +125,7 @@ class FeedAggregator:
             )
         return filtered_entries
 
-    async def _insert_statistics_data(self, entries):
+    async def _insert_statistics_data(self, entries: List[FeedEntry]) -> None:
         """Update current statistics data for each entry."""
         if entries:
             for entry in entries:
