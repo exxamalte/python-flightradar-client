@@ -1,5 +1,12 @@
 # Changes
 
+## 0.8 (25/02/2022)
+* Added Python 3.10 support.
+* Removed Python 3.6 support.
+* Bumped library versions: black, flake8, isort.
+* General code improvements.
+* Migrated to github actions.
+
 ## 0.7 (11/06/2021)
 * Set aiohttp to a release 3.7.4 or later (thanks @fabaff).
 * Add license tag.
