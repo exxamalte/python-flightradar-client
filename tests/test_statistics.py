@@ -5,17 +5,17 @@ from flightradar_client.statistics import Statistics, StatisticsData
 
 
 @pytest.mark.asyncio
-async def test_basic_statistics(self):
+async def test_basic_statistics():
     """Test some basic statistics behaviour."""
     statistics = Statistics()
     assert repr(statistics) == "<Statistics[FixedSizeDict()]>"
 
     value = statistics.get("non-existing")
-    self.assertIsNone(value)
+    assert value is None
 
 
 @pytest.mark.asyncio
-async def test_basic_statistics_data(self):
+async def test_basic_statistics_data():
     """Test some basic statistics data behaviour."""
     statistics_data = StatisticsData(False)
     assert repr(statistics_data) == "<StatisticsData(0.0%)>"
@@ -30,7 +30,7 @@ async def test_basic_statistics_data(self):
 
 
 @pytest.mark.asyncio
-async def test_update(self):
+async def test_update():
     """Test an update."""
     statistics = Statistics()
     KEYS = ["a", "b", "c"]
@@ -42,5 +42,5 @@ async def test_update(self):
     assert statistics.get("a").success_ratio() == 1.0
     # 3. unsuccessful update.
     await statistics.retrieval_unsuccessful()
-    self.assertAlmostEqual(statistics.get("a").success_ratio(), 0.666, 2)
+    assert round(abs(statistics.get("a").success_ratio() - 0.666), 2) == 0
     assert repr(statistics.get("a")) == "<StatisticsData(66.7%)>"
