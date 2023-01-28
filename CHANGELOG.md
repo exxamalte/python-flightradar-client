@@ -1,5 +1,10 @@
 # Changes
 
+## 0.9 (29/01/2023)
+* Added Python 3.11 support.
+* Removed deprecated asynctest dependency.
+* Bumped library versions: black, haversine.
+
 ## 0.8 (25/02/2022)
 * Added Python 3.10 support.
 * Removed Python 3.6 support.
